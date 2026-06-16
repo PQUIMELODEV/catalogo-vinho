@@ -1,0 +1,109 @@
+<p-toast position="bottom-center" />
+
+<!-- ===== Topbar do catálogo ===== -->
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="brand" href="#">
+      <span class="brand__mark"><i class="pi pi-glass"></i></span>
+      <span class="brand__text"><strong>Adega</strong> Serra Azul</span>
+    </a>
+
+    <div class="topbar__search">
+      <p-iconField iconPosition="left">
+        <p-inputIcon styleClass="pi pi-search" />
+        <input
+          type="text"
+          pInputText
+          placeholder="Buscar por nome, uva ou produtor…"
+          [ngModel]="search()"
+          (ngModelChange)="search.set($event)"
+        />
+      </p-iconField>
+    </div>
+
+    <p-button
+      type="button"
+      icon="pi pi-shopping-cart"
+      severity="secondary"
+      [outlined]="true"
+      [badge]="cart.count() > 0 ? (cart.count() + '') : undefined"
+      badgeSeverity="danger"
+      (click)="cartOpen.set(true)"
+      ariaLabel="Carrinho"
+    />
+  </div>
+</header>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="hero__inner">
+    <div class="hero__text">
+      <span class="hero__eyebrow">Seleção da casa · {{ wines().length }} rótulos</span>
+      <h1>Vinhos escolhidos a dedo,<br />direto da nossa adega.</h1>
+      <p>Monte seu pedido e finalize pelo WhatsApp. Entrega combinada diretamente com o vendedor.</p>
+    </div>
+    <div class="hero__bottles" aria-hidden="true">
+      @for (w of heroBottles(); track w.id; let i = $index) {
+        <div class="hero__bottle hb-{{ i }}"><app-bottle-art [wine]="w" /></div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ===== Filtros + grade ===== -->
+<main class="container">
+  <div class="filterbar">
+    <p-selectButton
+      [options]="categoryOptions()"
+      [ngModel]="activeCategory()"
+      (ngModelChange)="activeCategory.set($event)"
+      optionLabel="label"
+      optionValue="value"
+      [allowEmpty]="false"
+      styleClass="cat-select"
+    />
+    <div class="filterbar__right">
+      <span class="result-count">{{ filtered().length }} {{ filtered().length === 1 ? 'rótulo' : 'rótulos' }}</span>
+      <p-select
+        [options]="sortOptions"
+        [ngModel]="sort()"
+        (ngModelChange)="sort.set($event)"
+        optionLabel="label"
+        optionValue="value"
+        styleClass="sort-dropdown"
+      />
+    </div>
+  </div>
+
+  @if (filtered().length === 0) {
+    <div class="empty-state">
+      <i class="pi pi-search"></i>
+      <h3>Nenhum rótulo encontrado</h3>
+      <p>Tente outra busca ou categoria.</p>
+      <button pButton type="button" label="Limpar filtros" severity="secondary" [outlined]="true" (click)="clearFilters()"></button>
+    </div>
+  } @else {
+    <div class="grid">
+      @for (w of filtered(); track w.id) {
+        <app-wine-card [wine]="w" (open)="openWine($event)" (add)="addToCart($event)" />
+      }
+    </div>
+  }
+</main>
+
+<footer class="site-foot">
+  <span class="brand">
+    <span class="brand__mark"><i class="pi pi-glass"></i></span>
+    <span class="brand__text"><strong>Adega</strong> Serra Azul</span>
+  </span>
+  <p>Beba com moderação. Venda proibida para menores de 18 anos.</p>
+</footer>
+
+<!-- ===== Carrinho + detalhe ===== -->
+<app-cart-drawer [(visible)]="cartOpen" (checkout)="checkout()" />
+
+<app-wine-detail-dialog
+  [wine]="selectedWine()"
+  (close)="selectedWine.set(null)"
+  (addToCart)="addToCart($event.wine, $event.kind, $event.qty)"
+/>

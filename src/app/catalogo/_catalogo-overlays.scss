@@ -1,0 +1,116 @@
+// ============================================================
+//  Catálogo de Vinhos — estilos GLOBAIS dos overlays
+//  Dialog, Sidebar e Toast do PrimeNG são renderizados em <body>
+//  (appendTo="body"), portanto precisam de CSS global — não dá
+//  para escopá-los no componente.
+//
+//  Importe no seu src/styles.scss:
+//    @import 'app/catalogo/catalogo-overlays';
+// ============================================================
+
+// Tag "Destaque" (também aparece dentro do dialog)
+.p-tag.tag-feature { background: #7c2d3a; color: #fff; }
+
+// ---------- Dialog de detalhe ----------
+.wine-dialog {
+  .p-dialog-content { padding: 0; border-radius: var(--content-border-radius, 12px); overflow: hidden; }
+  .p-dialog-header { position: absolute; top: 0; right: 0; z-index: 2; background: transparent; border: none; padding: 10px; }
+
+  .dialog__grid { display: grid; grid-template-columns: 320px 1fr; }
+  .dialog__media {
+    position: relative; background: linear-gradient(120deg, #1b2230 0%, #2a1620 100%);
+    display: grid; place-items: center; padding: 30px;
+  }
+  .dialog__media .bottle-art { filter: drop-shadow(0 20px 30px rgba(0, 0, 0, .45)); }
+  .dialog__tags { position: absolute; top: 16px; left: 16px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+  .dialog__content { padding: 30px; }
+  .dialog__cat { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--primary-color); }
+  .dialog__title { font-size: 26px; font-weight: 800; letter-spacing: -.5px; margin: 8px 0 4px; color: var(--text-color); }
+  .dialog__producer { color: var(--text-color-secondary); font-size: 14px; margin: 0 0 16px; }
+  .dialog__desc { font-size: 14.5px; line-height: 1.6; margin: 0 0 20px; color: var(--text-color); }
+
+  .spec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--surface-border); border: 1px solid var(--surface-border); border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
+  .spec { background: var(--surface-card); padding: 10px 12px;
+    span { display: block; font-size: 11px; color: var(--text-color-secondary); margin-bottom: 2px; }
+    strong { font-size: 13.5px; color: var(--text-color); } }
+
+  .harmon { margin-bottom: 18px;
+    h4 { font-size: 13px; display: flex; align-items: center; gap: 7px; margin-bottom: 10px; color: var(--text-color-secondary);
+      .pi { color: var(--primary-color); } } }
+  .harmon__tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill { background: color-mix(in srgb, #7c2d3a 12%, transparent); color: #b14a5a; font-size: 12.5px; font-weight: 600; padding: 6px 12px; border-radius: 100px; }
+
+  .nutri { margin-bottom: 22px; border: 1px solid var(--surface-border); border-radius: 8px; padding: 4px 14px;
+    summary { cursor: pointer; padding: 10px 0; font-size: 13.5px; font-weight: 600; color: var(--text-color);
+      span { color: var(--text-color-secondary); font-weight: 400; } }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+    td { padding: 7px 0; border-top: 1px solid var(--surface-border); font-size: 13px; color: var(--text-color);
+      &:last-child { text-align: right; font-weight: 600; } } }
+
+  .dialog__buy { border-top: 1px solid var(--surface-border); padding-top: 18px; }
+  .kind-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .kind-toggle__opt { border: 1.5px solid var(--surface-border); background: var(--surface-card); border-radius: 8px; padding: 10px 14px; text-align: left; cursor: pointer; transition: all .15s; color: var(--text-color);
+    &.is-active { border-color: var(--primary-color); background: color-mix(in srgb, var(--primary-color) 12%, transparent); } }
+  .kt-label { display: block; font-size: 12px; color: var(--text-color-secondary); }
+  .kt-price { font-size: 17px; font-weight: 800; }
+  .dialog__buy-row { display: flex; gap: 12px; align-items: stretch;
+    .flex-1 { flex: 1; }
+    .p-inputnumber { flex-shrink: 0; } }
+
+  @media (max-width: 760px) {
+    .dialog__grid { grid-template-columns: 1fr; }
+    .dialog__media { padding: 24px; min-height: 240px; }
+    .dialog__content { padding: 24px; }
+    .dialog__title { font-size: 22px; }
+    .spec-grid { grid-template-columns: repeat(2, 1fr); }
+    .kind-toggle { grid-template-columns: 1fr; }
+    .dialog__buy-row { flex-direction: column; }
+    .dialog__buy-row .p-inputnumber { align-self: center; }
+  }
+}
+
+// Dialog ocupa a tela inteira no celular
+@media (max-width: 760px) {
+  .p-dialog.wine-dialog {
+    margin: 0; max-height: 100vh; height: 100vh; border-radius: 0;
+    .p-dialog-content { height: 100%; }
+  }
+}
+
+// ---------- Carrinho (Sidebar / Drawer) ----------
+.cart-sidebar {
+  .p-sidebar-content { display: flex; flex-direction: column; }
+  .cart__title { font-size: 17px; display: flex; align-items: center; gap: 9px; color: var(--text-color);
+    .pi { color: var(--primary-color); } }
+  .cart__body { display: flex; flex-direction: column; gap: 14px; flex: 1; }
+  .cart__empty { text-align: center; margin: auto; color: var(--text-color-secondary); padding: 40px 0;
+    .cart__empty-ico { font-size: 40px; opacity: .6; display: block; margin-bottom: 14px; }
+    p { font-weight: 600; color: var(--text-color); margin: 0 0 4px; } span { font-size: 13.5px; } }
+  .cart-item { display: flex; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--surface-border); &:last-child { border-bottom: none; } }
+  .cart-item__thumb { width: 58px; height: 84px; border-radius: 8px; background: var(--surface-100); border: 1px solid var(--surface-border); display: grid; place-items: center; flex-shrink: 0; overflow: hidden;
+    .bottle-art { width: 40px; height: 100px; margin-top: 8px; } }
+  .cart-item__info { flex: 1; min-width: 0; }
+  .cart-item__top { display: flex; justify-content: space-between; gap: 8px;
+    h4 { font-size: 14.5px; font-weight: 700; color: var(--text-color); } }
+  .cart-item__kind { font-size: 12px; color: var(--text-color-secondary); }
+  .link-danger { border: none; background: transparent; color: var(--text-color-secondary); font-size: 14px; padding: 2px; cursor: pointer; &:hover { color: #ef4444; } }
+  .cart-item__bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 12px;
+    strong { font-size: 15px; color: var(--text-color); } }
+  .stepper { display: inline-flex; align-items: center; border: 1px solid var(--surface-border); border-radius: 8px; overflow: hidden;
+    &__btn { width: 32px; height: 34px; border: none; background: var(--surface-100); color: var(--text-color); font-size: 12px; display: grid; place-items: center; cursor: pointer; &:disabled { opacity: .4; } }
+    &__val { min-width: 34px; text-align: center; font-weight: 700; font-size: 14px; color: var(--text-color); } }
+  .cart__foot { width: 100%; }
+  .cart__summary { display: flex; align-items: center; justify-content: space-between;
+    > span { font-size: 13px; color: var(--text-color-secondary); } }
+  .cart__total { text-align: right;
+    span { display: block; font-size: 12px; color: var(--text-color-secondary); }
+    strong { font-size: 24px; letter-spacing: -.5px; color: var(--text-color); } }
+  .cart__note { font-size: 12px; color: var(--text-color-secondary); display: flex; gap: 7px; margin: 14px 0; line-height: 1.4;
+    .pi { color: var(--primary-color); margin-top: 1px; } }
+  .btn-wa { background: #25d366 !important; border-color: #25d366 !important; color: #06281a !important; width: 100%; }
+}
+
+// Carrinho ocupa toda a largura no celular
+@media (max-width: 640px) {
+  .p-sidebar.cart-sidebar { width: 100vw !important; max-width: 100vw !important; }
+}
