@@ -22,6 +22,16 @@ export class CartService {
       .map((it) => {
         const wine = this.wineMap.get(it.id);
         if (!wine) return null;
+
+        if (it.kind === 'unit' && it.qty >= wine.boxQty) {
+          const boxes      = Math.floor(it.qty / wine.boxQty);
+          const remaining  = it.qty % wine.boxQty;
+          const lineTotal  = boxes * wine.priceBox + remaining * wine.priceUnit;
+          // preço médio por unidade para exibição
+          const unitPrice  = lineTotal / it.qty;
+          return { ...it, wine, unitPrice, lineTotal } as CartLine;
+        }
+
         const unitPrice = it.kind === 'box' ? wine.priceBox : wine.priceUnit;
         return { ...it, wine, unitPrice, lineTotal: unitPrice * it.qty } as CartLine;
       })

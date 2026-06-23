@@ -11,7 +11,7 @@ import { UserProfile } from '../models/user.model';
     standalone: true,
     imports: [CommonModule, DrawerModule, ButtonModule, AvatarModule, RippleModule],
     template: `
-        <p-drawer [(visible)]="visible" position="right" [style]="{ width: '360px' }" [closeOnEscape]="false" [showCloseIcon]="false" styleClass="profile-selector-drawer">
+        <p-drawer [(visible)]="visible" (visibleChange)="visibleChange.emit($event)" position="right" [style]="{ width: '360px' }" [closeOnEscape]="true" [showCloseIcon]="true" styleClass="profile-selector-drawer">
             <ng-template pTemplate="header">
                 <div class="flex flex-col gap-1">
                     <span class="text-xl font-semibold text-surface-900 dark:text-surface-0">Selecionar Perfil</span>
@@ -76,6 +76,7 @@ import { UserProfile } from '../models/user.model';
 export class ProfileSelectorComponent {
     @Input() visible = false;
     @Input() profiles: UserProfile[] = [];
+    @Output() visibleChange = new EventEmitter<boolean>();
     @Output() profileSelected = new EventEmitter<UserProfile>();
 
     selectedProfile: UserProfile | null = null;

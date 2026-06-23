@@ -10,6 +10,142 @@ import { BottleArtComponent } from './bottle-art.component';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CurrencyPipe, ButtonModule, TagModule, BottleArtComponent],
+  styles: [`
+    :host { display: contents; }
+
+    .wine-card {
+      background: var(--p-surface-card);
+      border: 1px solid var(--p-surface-border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform .18s, box-shadow .18s, border-color .18s;
+      cursor: default;
+    }
+    .wine-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px -8px rgba(0,0,0,.22);
+      border-color: var(--p-primary-color);
+    }
+    .wine-card.is-out { opacity: .75; }
+
+    /* --- Área da imagem --- */
+    .wine-card__media {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      cursor: pointer;
+      background: radial-gradient(ellipse at 50% 20%, var(--p-surface-100, #f1f5f9), var(--p-surface-ground, #eef1f6));
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: none;
+      border-bottom: 1px solid var(--p-surface-border);
+    }
+    .wine-card__tags {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      align-items: flex-start;
+      z-index: 1;
+    }
+    .wine-card__cat {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--p-text-muted-color);
+      background: var(--p-surface-card);
+      border: 1px solid var(--p-surface-border);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    /* --- Corpo --- */
+    .wine-card__body {
+      padding: 14px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+    .wine-card__name {
+      font-size: 15.5px;
+      font-weight: 700;
+      letter-spacing: -.15px;
+      margin: 0 0 3px;
+      color: var(--p-text-color);
+      cursor: pointer;
+      line-height: 1.3;
+    }
+    .wine-card__name:hover { color: var(--p-primary-color); }
+    .wine-card__producer {
+      margin: 0;
+      font-size: 12.5px;
+      color: var(--p-text-muted-color);
+      font-weight: 500;
+    }
+    .wine-card__meta {
+      margin: 0;
+      font-size: 12px;
+      color: var(--p-text-muted-color);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    .wine-card__meta .pi { font-size: 11px; }
+    .dot { opacity: .4; }
+
+    /* --- Preços --- */
+    .wine-card__prices {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+    }
+    .price {
+      flex: 1;
+      border: 1px solid var(--p-surface-border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: var(--p-surface-ground);
+    }
+    .price--box {
+      background: color-mix(in srgb, var(--p-primary-color) 10%, transparent);
+      border-color: color-mix(in srgb, var(--p-primary-color) 30%, transparent);
+    }
+    .price__label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--p-text-muted-color);
+      margin-bottom: 3px;
+    }
+    .price--box .price__label { color: var(--p-primary-color); }
+    .price__val {
+      display: block;
+      font-size: 15.5px;
+      font-weight: 800;
+      letter-spacing: -.3px;
+      color: var(--p-text-color);
+    }
+
+    /* --- Ações --- */
+    .wine-card__actions {
+      display: flex;
+      gap: 8px;
+    }
+    .wine-card__actions ::ng-deep .p-button { flex: 1; justify-content: center; }
+  `],
   template: `
     <article class="wine-card" [class.is-out]="isOut()">
       <button type="button" class="wine-card__media" (click)="open.emit(wine())" [attr.aria-label]="'Ver ' + wine().name">

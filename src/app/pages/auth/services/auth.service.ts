@@ -52,7 +52,7 @@ export class AuthService {
         this.activeProfile.set(profile);
         this.saveToStorage(updated);
 
-        const route = profile.role === 'admin' ? '/dashboard' : '/catalogo';
+        const route = profile.role === 'admin' ? '/' : '/catalogo';
         this.router.navigate([route]);
     }
 

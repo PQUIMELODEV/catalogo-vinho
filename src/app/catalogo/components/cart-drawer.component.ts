@@ -4,6 +4,7 @@ import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
 import { CartService } from '../services/cart.service';
 import { BottleArtComponent } from './bottle-art.component';
+import { Wine } from '../models/wine.model';
 
 @Component({
   selector: 'app-cart-drawer',
@@ -32,7 +33,17 @@ import { BottleArtComponent } from './bottle-art.component';
                   <div>
                     <h4>{{ line.wine.name }}</h4>
                     <span class="cart-item__kind">
-                      {{ line.kind === 'box' ? 'Caixa · ' + line.wine.boxQty + ' un' : 'Unidade avulsa' }}
+                      @if (line.kind === 'box') {
+                        Caixa · {{ line.wine.boxQty }} un
+                      } @else if (line.qty >= line.wine.boxQty) {
+                        {{ Math.floor(line.qty / line.wine.boxQty) }} caixa{{ Math.floor(line.qty / line.wine.boxQty) > 1 ? 's' : '' }}
+                        @if (line.qty % line.wine.boxQty > 0) {
+                          + {{ line.qty % line.wine.boxQty }} avulso{{ line.qty % line.wine.boxQty > 1 ? 's' : '' }}
+                        }
+                        <span class="kind-badge">preço caixa aplicado</span>
+                      } @else {
+                        Unidade avulsa
+                      }
                     </span>
                   </div>
                   <button type="button" class="link-danger" (click)="cart.remove(line.id, line.kind)" aria-label="Remover">
@@ -51,6 +62,7 @@ import { BottleArtComponent } from './bottle-art.component';
                   </div>
                   <strong>{{ line.lineTotal | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
                 </div>
+
               </div>
             </div>
           }
@@ -87,7 +99,17 @@ import { BottleArtComponent } from './bottle-art.component';
 })
 export class CartDrawerComponent {
   readonly cart = inject(CartService);
-  /** controla a visibilidade (two-way) */
   readonly visible = model(false);
   readonly checkout = output<void>();
+  readonly Math = Math;
+
+  upgradeToBox(id: string, wine: Wine): void {
+    const unitLine = this.cart.lines().find(l => l.id === id && l.kind === 'unit');
+    if (!unitLine) return;
+    const boxes = Math.floor(unitLine.qty / wine.boxQty);
+    const remaining = unitLine.qty % wine.boxQty;
+    this.cart.remove(id, 'unit');
+    if (boxes > 0) this.cart.add(wine, 'box', boxes);
+    if (remaining > 0) this.cart.add(wine, 'unit', remaining);
+  }
 }
