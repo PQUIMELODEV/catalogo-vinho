@@ -72,8 +72,35 @@ export interface VinhoCategoria {
   categoriaNome?: string;
 }
 
-// Tipos legados mantidos por compatibilidade com o catálogo público
+// Tipos legados — usados pelo catálogo público (campos em inglês)
 export type WineCategory = 'Tinto' | 'Branco' | 'Rosé' | 'Espumante' | 'Sobremesa';
+
+export interface Wine {
+  id: string;
+  name: string;
+  producer: string;
+  region: string;
+  country: string;
+  category: WineCategory;
+  grape: string;
+  year: number;
+  priceBox: number;
+  priceUnit: number;
+  boxQty: number;
+  stock: number;
+  abv: string;
+  serve: string;
+  body: string;
+  description: string;
+  pairing: string[];
+  nutrition: {
+    energia: string;
+    carboidratos: string;
+    acucares: string;
+    sodio: string;
+  };
+  featured: boolean;
+}
 
 export type PurchaseKind = 'unit' | 'box';
 
@@ -84,7 +111,7 @@ export interface CartItem {
 }
 
 export interface CartLine extends CartItem {
-  wine: Vinho;
+  wine: Wine;
   unitPrice: number;
   lineTotal: number;
 }

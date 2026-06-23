@@ -148,6 +148,42 @@ export class AppMenu {
                 ]
             },
             {
+                label: 'Configuração do Sistema',
+                icon: 'pi pi-fw pi-cog',
+                items: [
+                    {
+                        label: 'Vinhos',
+                        icon: 'pi pi-fw pi-list',
+                        routerLink: ['/configuracao/vinhos']
+                    },
+                    {
+                        label: 'Países',
+                        icon: 'pi pi-fw pi-globe',
+                        routerLink: ['/configuracao/paises']
+                    },
+                    {
+                        label: 'Tipos de Vinho',
+                        icon: 'pi pi-fw pi-tag',
+                        routerLink: ['/configuracao/tipos-vinho']
+                    },
+                    {
+                        label: 'Categorias',
+                        icon: 'pi pi-fw pi-folder',
+                        routerLink: ['/configuracao/categorias']
+                    },
+                    {
+                        label: 'Estoque',
+                        icon: 'pi pi-fw pi-box',
+                        routerLink: ['/configuracao/estoque']
+                    },
+                    {
+                        label: 'Movimentações',
+                        icon: 'pi pi-fw pi-arrows-h',
+                        routerLink: ['/configuracao/movimentacoes']
+                    }
+                ]
+            },
+            {
                 label: 'Get Started',
                 items: [
                     {
