@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -168,7 +168,8 @@ export class VinhosComponent implements OnInit {
         private paisService: PaisService,
         private tipoVinhoService: TipoVinhoService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private chRef: ChangeDetectorRef
     ) {}
 
     ngOnInit() {
@@ -181,7 +182,12 @@ export class VinhosComponent implements OnInit {
         return { nome: '', descricao: undefined, preco: 0, precoPromocional: undefined, paisId: 0, tipoVinhoId: 0, safra: new Date().getFullYear(), teorAlcoolico: 0, volumeMl: 750, ativo: true };
     }
 
-    load() { this.api.getVinhos().subscribe(data => this.vinhos.set(data)); }
+    load() {
+        this.api.getVinhos().subscribe(data => {
+            this.vinhos.set(data);
+            this.chRef.detectChanges();
+        });
+    }
 
     onFilter(table: Table, event: Event) { table.filterGlobal((event.target as HTMLInputElement).value, 'contains'); }
 
