@@ -1,27 +1,82 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { Wine, WineCategory } from '../models/wine.model';
-import { WINES, WINE_CATEGORIES } from '../data/wines.data';
+import { Injectable, inject } from '@angular/core';
+import { Observable, forkJoin } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
+import { Vinho, Wine, WineCategory } from '../models/wine.model';
+import { VinhoService } from '../../shared/services/vinho.service';
+import { EstoqueService } from '../../shared/services/estoque.service';
 
 /**
- * Fonte de dados do catálogo.
- * Hoje devolve dados mockados; para integrar com a API ASP.NET Core,
- * injete o HttpClient e troque os `of(...)` por `http.get<Wine[]>('/api/wines')`.
+ * Fonte de dados do catálogo público.
+ * Busca os vinhos ativos (visíveis no catálogo) e o estoque real da API.
  */
 @Injectable({ providedIn: 'root' })
 export class WineService {
-  // constructor(private http: HttpClient) {}
+  private readonly vinhoService = inject(VinhoService);
+  private readonly estoqueService = inject(EstoqueService);
+
+  private readonly wines$: Observable<Wine[]> = forkJoin({
+    vinhos: this.vinhoService.getVinhos(true),
+    estoques: this.estoqueService.getEstoques(),
+  }).pipe(
+    map(({ vinhos, estoques }) => {
+      const quantidadePorVinho = new Map(estoques.map((e) => [e.vinhoId, e.quantidade]));
+      return vinhos.map((v) => this.toWine(v, quantidadePorVinho.get(v.id) ?? 0));
+    }),
+    shareReplay(1),
+  );
 
   getWines(): Observable<Wine[]> {
-    // return this.http.get<Wine[]>(`${environment.apiUrl}/wines`);
-    return of(WINES);
+    return this.wines$;
   }
 
   getCategories(): Observable<WineCategory[]> {
-    return of(WINE_CATEGORIES);
+    return this.wines$.pipe(map((wines) => Array.from(new Set(wines.map((w) => w.category)))));
   }
 
   getById(id: string): Observable<Wine | undefined> {
-    return of(WINES.find((w) => w.id === id));
+    return this.wines$.pipe(map((wines) => wines.find((w) => w.id === id)));
+  }
+
+  /** Converte o Vinho real (back-end) para o modelo Wine usado hoje no catálogo. */
+  private toWine(v: Vinho, quantidadeEmEstoque: number): Wine {
+    return {
+      id: v.id,
+      name: v.nome,
+      // Produtor, região e uva ainda não existem no back-end (Vinho). Reative quando houver esse dado real.
+      producer: '',
+      region: '',
+      country: v.paisNome ?? '',
+      category: this.normalizeCategory(v.tipoVinhoNome),
+      grape: '',
+      year: v.safra,
+      // Preço/quantidade de caixa ainda não existem no back-end (Vinho). Reative quando houver esse dado real.
+      priceBox: 0,
+      priceUnit: v.preco,
+      boxQty: 0,
+      stock: quantidadeEmEstoque,
+      abv: `${v.teorAlcoolico}%`,
+      // Corpo e temperatura de serviço ainda não existem no back-end (Vinho). Reative quando houver esse dado real.
+      serve: '',
+      body: '',
+      description: v.descricao ?? '',
+      // Harmonização e tabela nutricional ainda não existem no back-end (Vinho). Reative quando houver esse dado real.
+      pairing: [],
+      nutrition: { energia: '', carboidratos: '', acucares: '', sodio: '' },
+      // "Destaque" ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
+      featured: false,
+    };
+  }
+
+  /** O back-end guarda o tipo sem acento (ex.: "Rose"); normaliza para o rótulo usado na UI. */
+  private normalizeCategory(nome?: string): WineCategory {
+    switch ((nome ?? '').trim().toLowerCase()) {
+      case 'tinto': return 'Tinto';
+      case 'branco': return 'Branco';
+      case 'rose':
+      case 'rosé': return 'Rosé';
+      case 'espumante': return 'Espumante';
+      case 'sobremesa': return 'Sobremesa';
+      default: return 'Tinto';
+    }
   }
 }

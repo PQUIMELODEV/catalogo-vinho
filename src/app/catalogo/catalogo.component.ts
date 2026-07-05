@@ -58,8 +58,14 @@ export class CatalogoComponent implements OnInit {
     { label: 'Nome (A–Z)', value: 'name' as SortKey },
   ];
 
-  /** vinhos em destaque para o hero */
-  readonly heroBottles = computed(() => this.wines().filter((w) => w.featured).slice(0, 4));
+  /**
+   * Vinhos em destaque para o hero. Wine.featured ainda não existe no back-end
+   * (Vinho), então por ora cai para os primeiros da lista real.
+   */
+  readonly heroBottles = computed(() => {
+    const featured = this.wines().filter((w) => w.featured);
+    return (featured.length ? featured : this.wines()).slice(0, 4);
+  });
 
   /** lista filtrada + ordenada */
   readonly filtered = computed<Wine[]>(() => {

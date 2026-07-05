@@ -34,9 +34,11 @@ import { BottleArtComponent } from './bottle-art.component';
               } @else if (w.stock <= 5) {
                 <p-tag severity="warn" value="Últimas unidades" />
               }
+              <!-- "Destaque" depende de Wine.featured, que ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
               @if (w.featured && !isOut()) {
                 <p-tag styleClass="tag-feature" icon="pi pi-star-fill" value="Destaque" />
               }
+              -->
             </div>
             <app-bottle-art [wine]="w" [big]="true" />
           </div>
@@ -44,18 +46,25 @@ import { BottleArtComponent } from './bottle-art.component';
           <div class="dialog__content">
             <span class="dialog__cat">{{ w.category }} · {{ w.country }}</span>
             <h2 class="dialog__title">{{ w.name }}</h2>
+            <!-- Produtor e região ainda não existem no back-end (Vinho). Reative quando houver esse dado real.
             <p class="dialog__producer">{{ w.producer }} — {{ w.region }}</p>
+            -->
             <p class="dialog__desc">{{ w.description }}</p>
 
             <div class="spec-grid">
+              <!-- Uva ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
               <div class="spec"><span>Uva</span><strong>{{ w.grape }}</strong></div>
+              -->
               <div class="spec"><span>Safra</span><strong>{{ w.year }}</strong></div>
               <div class="spec"><span>Teor alcoólico</span><strong>{{ w.abv }}</strong></div>
+              <!-- Corpo e temperatura de serviço ainda não existem no back-end (Vinho). Reative quando houver esse dado real.
               <div class="spec"><span>Corpo</span><strong>{{ w.body }}</strong></div>
               <div class="spec"><span>Servir a</span><strong>{{ w.serve }}</strong></div>
+              -->
               <div class="spec"><span>Estoque</span><strong>{{ isOut() ? 'Esgotado' : w.stock + ' un' }}</strong></div>
             </div>
 
+            <!-- Harmonização ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
             <div class="harmon">
               <h4><i class="pi pi-apple"></i> Harmonização</h4>
               <div class="harmon__tags">
@@ -64,7 +73,9 @@ import { BottleArtComponent } from './bottle-art.component';
                 }
               </div>
             </div>
+            -->
 
+            <!-- Tabela nutricional ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
             <details class="nutri">
               <summary>Tabela nutricional <span>(porção 100 ml)</span></summary>
               <table>
@@ -76,8 +87,10 @@ import { BottleArtComponent } from './bottle-art.component';
                 </tbody>
               </table>
             </details>
+            -->
 
             <div class="dialog__buy">
+              <!-- Compra por caixa depende de Wine.priceBox/boxQty, que ainda não existem no back-end (Vinho). Reative quando houver esse dado real.
               <div class="kind-toggle">
                 <button type="button" class="kind-toggle__opt" [class.is-active]="kind() === 'unit'" (click)="kind.set('unit')">
                   <span class="kt-label">Avulso</span>
@@ -88,6 +101,7 @@ import { BottleArtComponent } from './bottle-art.component';
                   <span class="kt-price">{{ w.priceBox | currency: 'BRL' : 'symbol' : '1.0-0' }}</span>
                 </button>
               </div>
+              -->
               <div class="dialog__buy-row">
                 <p-inputNumber
                   [(ngModel)]="qtyModel"
@@ -131,8 +145,9 @@ export class WineDetailDialogComponent {
   readonly totalPrice = computed(() => {
     const w = this.wine();
     if (!w) return 0;
-    const unit = this.kind() === 'box' ? w.priceBox : w.priceUnit;
-    return unit * this.qtyModel();
+    // Preço de caixa depende de Wine.priceBox, que ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
+    // const unit = this.kind() === 'box' ? w.priceBox : w.priceUnit;
+    return w.priceUnit * this.qtyModel();
   });
 
   confirm(): void {

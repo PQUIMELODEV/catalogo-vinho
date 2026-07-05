@@ -155,9 +155,11 @@ import { BottleArtComponent } from './bottle-art.component';
           } @else if (wine().stock <= 5) {
             <p-tag severity="warn" value="Últimas unidades" />
           }
+          <!-- "Destaque" depende de Wine.featured, que ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
           @if (wine().featured && !isOut()) {
             <p-tag styleClass="tag-feature" icon="pi pi-star-fill" value="Destaque" />
           }
+          -->
         </div>
         <app-bottle-art [wine]="wine()" />
         <span class="wine-card__cat">{{ wine().category }}</span>
@@ -166,21 +168,27 @@ import { BottleArtComponent } from './bottle-art.component';
       <div class="wine-card__body">
         <div>
           <h3 class="wine-card__name" (click)="open.emit(wine())">{{ wine().name }}</h3>
+          <!-- Produtor ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
           <p class="wine-card__producer">{{ wine().producer }}</p>
+          -->
         </div>
+        <!-- Região e uva ainda não existem no back-end (Vinho). Reative quando houver esse dado real.
         <p class="wine-card__meta">
           <i class="pi pi-map-marker"></i> {{ wine().region }}
           <span class="dot">·</span> {{ wine().grape }}
         </p>
+        -->
         <div class="wine-card__prices">
           <div class="price">
-            <span class="price__label">Avulso</span>
+            <span class="price__label">Preço</span>
             <span class="price__val">{{ wine().priceUnit | currency: 'BRL' : 'symbol' : '1.0-0' }}</span>
           </div>
+          <!-- Preço de caixa ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
           <div class="price price--box">
             <span class="price__label">Caixa ({{ wine().boxQty }})</span>
             <span class="price__val">{{ wine().priceBox | currency: 'BRL' : 'symbol' : '1.0-0' }}</span>
           </div>
+          -->
         </div>
         <div class="wine-card__actions">
           <button pButton type="button" label="Detalhes" severity="secondary" [outlined]="true" size="small" (click)="open.emit(wine())"></button>

@@ -31,8 +31,10 @@ import { VARIETAL_TINT } from '../data/wines.data';
       <rect x="34" y="168" width="52" height="86" rx="4" fill="#fbfaf7" opacity="0.96" />
       <rect x="34" y="168" width="52" height="20" rx="4" [attr.fill]="tint().base" opacity="0.9" />
       <text x="60" y="182" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">{{ wine().year }}</text>
+      <!-- Iniciais do produtor dependem de Wine.producer, que ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
       <text x="60" y="212" text-anchor="middle" font-size="8.5" font-weight="700" fill="#3a2a22">{{ producerTag() }}</text>
       <line x1="42" y1="222" x2="78" y2="222" [attr.stroke]="tint().deep" stroke-width="1" opacity="0.5" />
+      -->
       <text x="60" y="238" text-anchor="middle" font-size="6.5" fill="#6b5b50">{{ wine().category.toUpperCase() }}</text>
     </svg>
   `,
@@ -47,5 +49,6 @@ export class BottleArtComponent {
   readonly h = computed(() => (this.big() ? 300 : 215));
   readonly gradId = computed(() => `g-${this.wine().id}${this.big() ? '-b' : ''}`);
   readonly fill = computed(() => `url(#${this.gradId()})`);
-  readonly producerTag = computed(() => this.wine().producer.split(' ')[0].toUpperCase());
+  // Iniciais do produtor dependem de Wine.producer, que ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
+  // readonly producerTag = computed(() => this.wine().producer.split(' ')[0].toUpperCase());
 }

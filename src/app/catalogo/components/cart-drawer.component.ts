@@ -4,7 +4,7 @@ import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
 import { CartService } from '../services/cart.service';
 import { BottleArtComponent } from './bottle-art.component';
-import { Wine } from '../models/wine.model';
+// import { Wine } from '../models/wine.model'; // usado apenas por upgradeToBox, desabilitado abaixo
 
 @Component({
   selector: 'app-cart-drawer',
@@ -33,6 +33,7 @@ import { Wine } from '../models/wine.model';
                   <div>
                     <h4>{{ line.wine.name }}</h4>
                     <span class="cart-item__kind">
+                      <!-- Agrupamento por caixa depende de Wine.boxQty/priceBox, que ainda não existem no back-end (Vinho). Reative quando houver esse dado real.
                       @if (line.kind === 'box') {
                         Caixa · {{ line.wine.boxQty }} un
                       } @else if (line.qty >= line.wine.boxQty) {
@@ -44,6 +45,8 @@ import { Wine } from '../models/wine.model';
                       } @else {
                         Unidade avulsa
                       }
+                      -->
+                      Unidade avulsa
                     </span>
                   </div>
                   <button type="button" class="link-danger" (click)="cart.remove(line.id, line.kind)" aria-label="Remover">
@@ -103,13 +106,14 @@ export class CartDrawerComponent {
   readonly checkout = output<void>();
   readonly Math = Math;
 
-  upgradeToBox(id: string, wine: Wine): void {
-    const unitLine = this.cart.lines().find(l => l.id === id && l.kind === 'unit');
-    if (!unitLine) return;
-    const boxes = Math.floor(unitLine.qty / wine.boxQty);
-    const remaining = unitLine.qty % wine.boxQty;
-    this.cart.remove(id, 'unit');
-    if (boxes > 0) this.cart.add(wine, 'box', boxes);
-    if (remaining > 0) this.cart.add(wine, 'unit', remaining);
-  }
+  // Conversão para caixa depende de Wine.boxQty, que ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
+  // upgradeToBox(id: string, wine: Wine): void {
+  //   const unitLine = this.cart.lines().find(l => l.id === id && l.kind === 'unit');
+  //   if (!unitLine) return;
+  //   const boxes = Math.floor(unitLine.qty / wine.boxQty);
+  //   const remaining = unitLine.qty % wine.boxQty;
+  //   this.cart.remove(id, 'unit');
+  //   if (boxes > 0) this.cart.add(wine, 'box', boxes);
+  //   if (remaining > 0) this.cart.add(wine, 'unit', remaining);
+  // }
 }
