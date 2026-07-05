@@ -46,30 +46,28 @@ import { UserProfile } from '../models/user.model';
     styles: [`
         :host ::ng-deep .profile-selector-drawer .p-drawer-content {
             padding: 1.5rem;
-            background-color: var(--p-surface-0);
         }
 
         :host ::ng-deep .profile-selector-drawer .p-drawer-header {
-            background-color: var(--p-surface-0);
             border-bottom: 1px solid var(--p-surface-200);
             padding: 1.5rem;
         }
 
         .profile-option {
-            background-color: var(--p-surface-0);
-            border: 1px solid var(--p-surface-200);
+            background-color: var(--p-surface-card);
+            border: 1px solid var(--p-surface-border);
             color: var(--p-text-color);
             transition: border-color 0.2s, background-color 0.2s;
         }
 
         .profile-option:hover {
             border-color: var(--p-primary-color);
-            background-color: var(--p-surface-50);
+            background-color: var(--p-surface-hover);
         }
 
         .profile-option.selected {
             border-color: var(--p-primary-color);
-            background-color: color-mix(in srgb, var(--p-primary-color) 10%, var(--p-surface-0));
+            background-color: color-mix(in srgb, var(--p-primary-color) 10%, var(--p-surface-card));
         }
     `]
 })

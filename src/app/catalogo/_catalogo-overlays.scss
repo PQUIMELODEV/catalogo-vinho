@@ -313,5 +313,6 @@
 
 // Carrinho ocupa toda a largura no celular
 @media (max-width: 640px) {
-  .p-sidebar.cart-sidebar { width: 100vw !important; max-width: 100vw !important; }
+  .p-sidebar.cart-sidebar,
+  .p-drawer.cart-sidebar { width: 100vw !important; max-width: 100vw !important; }
 }

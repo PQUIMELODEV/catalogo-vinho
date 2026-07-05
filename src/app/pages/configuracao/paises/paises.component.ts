@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -12,7 +12,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TagModule } from 'primeng/tag';
-import { ApiService } from '@/app/shared/services/api.service';
+import { PaisService } from '@/app/shared/services/pais.service';
 import { Pais } from '@/app/catalogo/models/wine.model';
 
 @Component({
@@ -23,7 +23,7 @@ import { Pais } from '@/app/catalogo/models/wine.model';
         InputTextModule, ToolbarModule, ToastModule, ConfirmDialogModule,
         IconFieldModule, InputIconModule, TagModule
     ],
-    providers: [MessageService, ConfirmationService],
+    providers: [ConfirmationService],
     template: `
         <p-toast />
         <p-confirmdialog [style]="{ width: '450px' }" />
@@ -65,7 +65,7 @@ import { Pais } from '@/app/catalogo/models/wine.model';
                     <td>{{ pais.nome }}</td>
                     <td>
                         @if (pais.bandeiraUrl) {
-                            <a [href]="pais.bandeiraUrl" target="_blank" class="text-blue-500 underline">{{ pais.bandeiraUrl }}</a>
+                            <img [src]="pais.bandeiraUrl" [alt]="pais.nome" style="height:24px; border-radius:3px;" />
                         } @else {
                             <span class="text-surface-400">—</span>
                         }
@@ -112,15 +112,19 @@ export class PaisesComponent implements OnInit {
     @ViewChild('dt') dt!: Table;
 
     constructor(
-        private api: ApiService,
+        private paisService: PaisService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private chRef: ChangeDetectorRef
     ) {}
 
     ngOnInit() { this.load(); }
 
     load() {
-        this.api.getPaises().subscribe(data => this.paises.set(data));
+        this.paisService.getPaises().subscribe(data => {
+            this.paises.set(data);
+            this.chRef.detectChanges();
+        });
     }
 
     onFilter(table: Table, event: Event) {
@@ -151,8 +155,8 @@ export class PaisesComponent implements OnInit {
         if (!this.form.nome?.trim()) return;
 
         const op = this.editingId
-            ? this.api.updatePais(this.editingId, this.form)
-            : this.api.createPais(this.form);
+            ? this.paisService.updatePais(this.editingId, this.form)
+            : this.paisService.createPais(this.form);
 
         op.subscribe({
             next: () => {
@@ -188,7 +192,7 @@ export class PaisesComponent implements OnInit {
     }
 
     private delete(id: number, reload = true) {
-        this.api.deletePais(id).subscribe({
+        this.paisService.deletePais(id).subscribe({
             next: () => { if (reload) { this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'País excluído.', life: 3000 }); this.load(); } },
             error: () => this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível excluir.', life: 3000 })
         });

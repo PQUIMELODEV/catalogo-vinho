@@ -16,7 +16,9 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TagModule } from 'primeng/tag';
-import { ApiService } from '@/app/shared/services/api.service';
+import { VinhoService } from '@/app/shared/services/vinho.service';
+import { PaisService } from '@/app/shared/services/pais.service';
+import { TipoVinhoService } from '@/app/shared/services/tipo-vinho.service';
 import { Pais, TipoVinho, Vinho } from '@/app/catalogo/models/wine.model';
 
 @Component({
@@ -28,7 +30,7 @@ import { Pais, TipoVinho, Vinho } from '@/app/catalogo/models/wine.model';
         ToggleSwitchModule, ToolbarModule, ToastModule, ConfirmDialogModule,
         IconFieldModule, InputIconModule, TagModule
     ],
-    providers: [MessageService, ConfirmationService],
+    providers: [ConfirmationService],
     template: `
         <p-toast />
         <p-confirmdialog [style]="{ width: '450px' }" />
@@ -162,15 +164,17 @@ export class VinhosComponent implements OnInit {
     @ViewChild('dt') dt!: Table;
 
     constructor(
-        private api: ApiService,
+        private api: VinhoService,
+        private paisService: PaisService,
+        private tipoVinhoService: TipoVinhoService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {}
 
     ngOnInit() {
         this.load();
-        this.api.getPaises().subscribe(d => this.paises.set(d));
-        this.api.getTiposVinho().subscribe(d => this.tiposVinho.set(d));
+        this.paisService.getPaises().subscribe(d => this.paises.set(d));
+        this.tipoVinhoService.getTiposVinho().subscribe(d => this.tiposVinho.set(d));
     }
 
     emptyForm(): Omit<Vinho, 'id' | 'criadoEm' | 'paisNome' | 'tipoVinhoNome'> {

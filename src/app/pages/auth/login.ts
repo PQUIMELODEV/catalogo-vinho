@@ -83,13 +83,13 @@ import { AuthUser, UserProfile } from './models/user.model';
                                 (keyup.enter)="onLogin()"
                             />
 
-                            <div class="flex items-center justify-between mt-2 mb-8 gap-8">
+                            <!-- <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                                 <div class="flex items-center">
                                     <p-checkbox [(ngModel)]="rememberMe" id="rememberme1" binary class="mr-2" />
                                     <label for="rememberme1">Lembrar de mim</label>
                                 </div>
                                 <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Esqueci minha senha</span>
-                            </div>
+                            </div> -->
 
                             <p-button
                                 label="Entrar"
@@ -144,6 +144,6 @@ export class Login {
 
     onProfileSelected(profile: UserProfile): void {
         this.showProfileSelector = false;
-        this.authService.selectProfile(profile);
+        setTimeout(() => this.authService.selectProfile(profile), 350);
     }
 }

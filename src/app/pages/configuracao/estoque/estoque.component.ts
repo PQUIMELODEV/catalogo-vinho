@@ -11,7 +11,7 @@ import { ToastModule } from 'primeng/toast';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TagModule } from 'primeng/tag';
-import { ApiService } from '@/app/shared/services/api.service';
+import { EstoqueService } from '@/app/shared/services/estoque.service';
 import { Estoque } from '@/app/catalogo/models/wine.model';
 
 @Component({
@@ -21,7 +21,7 @@ import { Estoque } from '@/app/catalogo/models/wine.model';
         CommonModule, FormsModule, TableModule, ButtonModule, DialogModule,
         InputNumberModule, ToolbarModule, ToastModule, IconFieldModule, InputIconModule, TagModule
     ],
-    providers: [MessageService],
+    providers: [],
     template: `
         <p-toast />
 
@@ -93,7 +93,7 @@ export class EstoqueComponent implements OnInit {
 
     @ViewChild('dt') dt!: Table;
 
-    constructor(private api: ApiService, private messageService: MessageService) {}
+    constructor(private api: EstoqueService, private messageService: MessageService) {}
 
     ngOnInit() { this.load(); }
 

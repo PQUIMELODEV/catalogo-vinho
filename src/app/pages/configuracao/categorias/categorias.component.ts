@@ -13,7 +13,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TagModule } from 'primeng/tag';
-import { ApiService } from '@/app/shared/services/api.service';
+import { CategoriaService } from '@/app/shared/services/categoria.service';
 import { Categoria } from '@/app/catalogo/models/wine.model';
 
 @Component({
@@ -24,7 +24,7 @@ import { Categoria } from '@/app/catalogo/models/wine.model';
         InputTextModule, ToolbarModule, ToastModule, ConfirmDialogModule,
         IconFieldModule, InputIconModule, ToggleSwitchModule, TagModule
     ],
-    providers: [MessageService, ConfirmationService],
+    providers: [ConfirmationService],
     template: `
         <p-toast />
         <p-confirmdialog [style]="{ width: '450px' }" />
@@ -114,7 +114,7 @@ export class CategoriasComponent implements OnInit {
     @ViewChild('dt') dt!: Table;
 
     constructor(
-        private api: ApiService,
+        private api: CategoriaService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {}

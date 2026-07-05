@@ -14,7 +14,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TagModule } from 'primeng/tag';
-import { ApiService } from '@/app/shared/services/api.service';
+import { MovimentacaoService } from '@/app/shared/services/movimentacao.service';
+import { VinhoService } from '@/app/shared/services/vinho.service';
 import { MovimentacaoEstoque, Vinho } from '@/app/catalogo/models/wine.model';
 
 @Component({
@@ -25,7 +26,7 @@ import { MovimentacaoEstoque, Vinho } from '@/app/catalogo/models/wine.model';
         InputTextModule, InputNumberModule, SelectModule, ToolbarModule,
         ToastModule, ConfirmDialogModule, IconFieldModule, InputIconModule, TagModule
     ],
-    providers: [MessageService, ConfirmationService],
+    providers: [ConfirmationService],
     template: `
         <p-toast />
         <p-confirmdialog [style]="{ width: '450px' }" />
@@ -122,14 +123,15 @@ export class MovimentacoesComponent implements OnInit {
     @ViewChild('dt') dt!: Table;
 
     constructor(
-        private api: ApiService,
+        private api: MovimentacaoService,
+        private vinhoService: VinhoService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {}
 
     ngOnInit() {
         this.load();
-        this.api.getVinhos(true).subscribe(d => this.vinhos.set(d));
+        this.vinhoService.getVinhos(true).subscribe(d => this.vinhos.set(d));
     }
 
     load() { this.api.getMovimentacoes().subscribe(data => this.movimentacoes.set(data)); }

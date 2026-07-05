@@ -11,7 +11,7 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { ApiService } from '@/app/shared/services/api.service';
+import { TipoVinhoService } from '@/app/shared/services/tipo-vinho.service';
 import { TipoVinho } from '@/app/catalogo/models/wine.model';
 
 @Component({
@@ -22,7 +22,7 @@ import { TipoVinho } from '@/app/catalogo/models/wine.model';
         InputTextModule, ToolbarModule, ToastModule, ConfirmDialogModule,
         IconFieldModule, InputIconModule
     ],
-    providers: [MessageService, ConfirmationService],
+    providers: [ConfirmationService],
     template: `
         <p-toast />
         <p-confirmdialog [style]="{ width: '450px' }" />
@@ -99,7 +99,7 @@ export class TiposVinhoComponent implements OnInit {
     @ViewChild('dt') dt!: Table;
 
     constructor(
-        private api: ApiService,
+        private api: TipoVinhoService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {}
