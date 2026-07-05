@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -93,11 +93,20 @@ export class EstoqueComponent implements OnInit {
 
     @ViewChild('dt') dt!: Table;
 
-    constructor(private api: EstoqueService, private messageService: MessageService) {}
+    constructor(
+        private api: EstoqueService,
+        private messageService: MessageService,
+        private chRef: ChangeDetectorRef
+    ) {}
 
     ngOnInit() { this.load(); }
 
-    load() { this.api.getEstoques().subscribe(data => this.estoques.set(data)); }
+    load() {
+        this.api.getEstoques().subscribe(data => {
+            this.estoques.set(data);
+            this.chRef.detectChanges();
+        });
+    }
 
     onFilter(table: Table, event: Event) { table.filterGlobal((event.target as HTMLInputElement).value, 'contains'); }
 

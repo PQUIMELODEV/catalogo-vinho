@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -116,12 +116,18 @@ export class CategoriasComponent implements OnInit {
     constructor(
         private api: CategoriaService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private chRef: ChangeDetectorRef
     ) {}
 
     ngOnInit() { this.load(); }
 
-    load() { this.api.getCategorias().subscribe(data => this.categorias.set(data)); }
+    load() {
+        this.api.getCategorias().subscribe(data => {
+            this.categorias.set(data);
+            this.chRef.detectChanges();
+        });
+    }
 
     onFilter(table: Table, event: Event) { table.filterGlobal((event.target as HTMLInputElement).value, 'contains'); }
 
