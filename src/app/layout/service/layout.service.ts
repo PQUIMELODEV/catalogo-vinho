@@ -60,6 +60,7 @@ export class LayoutService {
 
             if (!this.initialized || !config) {
                 this.initialized = true;
+                this.toggleDarkMode(config);
                 return;
             }
 

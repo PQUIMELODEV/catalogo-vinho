@@ -1,24 +1,15 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
 import { LayoutService } from '@/app/layout/service/layout.service';
 import { AuthService } from '@/app/pages/auth/services/auth.service';
-import { ProfileSelectorComponent } from '@/app/pages/auth/components/profile-selector.component';
-import { UserProfile } from '@/app/pages/auth/models/user.model';
 
 @Component({
     selector: 'app-topbar',
     standalone: true,
-    imports: [RouterModule, CommonModule, StyleClassModule, ProfileSelectorComponent],
+    imports: [RouterModule, CommonModule, StyleClassModule],
     template: `
-    <app-profile-selector
-        [visible]="showProfileSelector()"
-        [profiles]="profiles()"
-        (profileSelected)="onProfileSelected($event)"
-        (visibleChange)="showProfileSelector.set($event)"
-    />
-
     <div class="layout-topbar">
         <div class="layout-topbar-logo-container">
             <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
@@ -38,21 +29,23 @@ import { UserProfile } from '@/app/pages/auth/models/user.model';
 
                 <div class="w-px h-6 mx-1" style="background: var(--p-surface-border)"></div>
 
+                @if (authService.temMultiplosPerfis()) {
+                    <button
+                        type="button"
+                        class="layout-topbar-action"
+                        routerLink="/catalogo"
+                        title="Ver como cliente"
+                    >
+                        <i class="pi pi-shopping-bag"></i>
+                    </button>
+                }
+
                 <div class="flex items-center gap-2 px-2 py-1 rounded-lg" style="background: var(--p-surface-hover)">
                     <div class="flex items-center justify-center w-8 h-8 rounded-full" style="background: var(--p-primary-color)">
                         <i class="pi pi-user text-sm" style="color: var(--p-primary-contrast-color)"></i>
                     </div>
                     <span class="text-sm font-medium hidden md:block">{{ userName }}</span>
                 </div>
-
-                <button
-                    type="button"
-                    class="layout-topbar-action"
-                    (click)="openProfileSelector()"
-                    title="Trocar perfil"
-                >
-                    <i class="pi pi-arrow-right-arrow-left"></i>
-                </button>
 
                 <button
                     type="button"
@@ -71,27 +64,12 @@ export class AppTopbar {
     layoutService = inject(LayoutService);
     authService = inject(AuthService);
 
-    showProfileSelector = signal(false);
-    profiles = signal<UserProfile[]>([]);
-
     get userName(): string {
-        return this.authService.activeProfile()?.name ?? this.authService.currentUser()?.name ?? 'Usuário';
+        return this.authService.currentUser()?.nome ?? 'Usuário';
     }
 
     toggleDarkMode() {
         this.layoutService.layoutConfig.update(state => ({ ...state, darkTheme: !state.darkTheme }));
-    }
-
-    openProfileSelector() {
-        const user = this.authService.currentUser();
-        if (!user || user.profiles.length < 2) return;
-        this.profiles.set(user.profiles);
-        this.showProfileSelector.set(true);
-    }
-
-    onProfileSelected(profile: UserProfile) {
-        this.showProfileSelector.set(false);
-        this.authService.selectProfile(profile);
     }
 
     logout() {

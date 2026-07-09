@@ -14,8 +14,8 @@ import { BottleArtComponent } from './bottle-art.component';
     :host { display: contents; }
 
     .wine-card {
-      background: var(--p-surface-card);
-      border: 1px solid var(--p-surface-border);
+      background: var(--p-content-background);
+      border: 1px solid var(--p-content-border-color);
       border-radius: 14px;
       overflow: hidden;
       display: flex;
@@ -36,12 +36,12 @@ import { BottleArtComponent } from './bottle-art.component';
       width: 100%;
       height: 220px;
       cursor: pointer;
-      background: radial-gradient(ellipse at 50% 20%, var(--p-surface-100, #f1f5f9), var(--p-surface-ground, #eef1f6));
+      background: radial-gradient(ellipse at 50% 20%, var(--p-surface-100, #f1f5f9), var(--p-content-hover-background, #eef1f6));
       display: grid;
       place-items: center;
       padding: 0;
       border: none;
-      border-bottom: 1px solid var(--p-surface-border);
+      border-bottom: 1px solid var(--p-content-border-color);
     }
     .wine-card__photo {
       width: 100%;
@@ -108,8 +108,8 @@ import { BottleArtComponent } from './bottle-art.component';
       letter-spacing: .07em;
       text-transform: uppercase;
       color: var(--p-text-muted-color);
-      background: var(--p-surface-card);
-      border: 1px solid var(--p-surface-border);
+      background: var(--p-content-background);
+      border: 1px solid var(--p-content-border-color);
       padding: 3px 8px;
       border-radius: 6px;
     }
@@ -158,10 +158,10 @@ import { BottleArtComponent } from './bottle-art.component';
     }
     .price {
       flex: 1;
-      border: 1px solid var(--p-surface-border);
+      border: 1px solid var(--p-content-border-color);
       border-radius: 8px;
       padding: 8px 10px;
-      background: var(--p-surface-ground);
+      background: var(--p-content-hover-background);
     }
     .price--box {
       background: color-mix(in srgb, var(--p-primary-color) 10%, transparent);

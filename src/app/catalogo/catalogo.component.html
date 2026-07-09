@@ -21,16 +21,50 @@
       </p-iconField>
     </div>
 
-    <p-button
-      type="button"
-      icon="pi pi-shopping-cart"
-      severity="secondary"
-      [outlined]="true"
-      [badge]="cart.count() > 0 ? (cart.count() + '') : undefined"
-      badgeSeverity="danger"
-      (click)="cartOpen.set(true)"
-      ariaLabel="Carrinho"
-    />
+    <div class="topbar__actions">
+      <p-button
+        type="button"
+        [icon]="layoutService.isDarkTheme() ? 'pi pi-sun' : 'pi pi-moon'"
+        severity="secondary"
+        [outlined]="true"
+        (click)="toggleDarkMode()"
+        ariaLabel="Alternar tema"
+        pTooltip="Alternar tema"
+      />
+
+      @if (authService.temMultiplosPerfis()) {
+        <p-button
+          type="button"
+          icon="pi pi-cog"
+          severity="secondary"
+          [outlined]="true"
+          routerLink="/"
+          ariaLabel="Área administrativa"
+          pTooltip="Área administrativa"
+        />
+      }
+
+      <p-button
+        type="button"
+        icon="pi pi-shopping-cart"
+        severity="secondary"
+        [outlined]="true"
+        [badge]="cart.count() > 0 ? (cart.count() + '') : undefined"
+        badgeSeverity="danger"
+        (click)="cartOpen.set(true)"
+        ariaLabel="Carrinho"
+      />
+
+      <p-button
+        type="button"
+        icon="pi pi-sign-out"
+        severity="secondary"
+        [outlined]="true"
+        (click)="logout()"
+        ariaLabel="Sair"
+        pTooltip="Sair"
+      />
+    </div>
   </div>
 </header>
 

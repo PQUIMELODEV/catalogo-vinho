@@ -1,17 +1,16 @@
-export type UserRole = 'admin' | 'cliente';
-
-export interface UserProfile {
-    id: string;
-    name: string;
-    role: UserRole;
-    avatar?: string;
+export interface Acesso {
+    modulo: string;
+    visualizar: boolean;
+    inserir: boolean;
+    editar: boolean;
+    remover: boolean;
 }
 
 export interface AuthUser {
-    id: string;
+    id: number;
+    nome: string;
     email: string;
-    name: string;
-    profiles: UserProfile[];
-    activeProfile?: UserProfile;
+    ativo: boolean;
     token: string;
+    acessos: Acesso[];
 }

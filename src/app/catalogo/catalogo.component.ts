@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -7,6 +8,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { SelectModule } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
 import { MessageService } from 'primeng/api';
 
 import { PurchaseKind, Wine, WineCategory } from './models/wine.model';
@@ -16,6 +18,8 @@ import { WineCardComponent } from './components/wine-card.component';
 import { WineDetailDialogComponent } from './components/wine-detail-dialog.component';
 import { CartDrawerComponent } from './components/cart-drawer.component';
 import { BottleArtComponent } from './components/bottle-art.component';
+import { AuthService } from '../pages/auth/services/auth.service';
+import { LayoutService } from '../layout/service/layout.service';
 
 type SortKey = 'rel' | 'price-asc' | 'price-desc' | 'name';
 
@@ -28,8 +32,8 @@ const WHATSAPP_NUMBER = '1XXXXXXXXXX';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [MessageService],
   imports: [
-    FormsModule, ButtonModule, InputTextModule, IconFieldModule, InputIconModule,
-    SelectButtonModule, SelectModule, ToastModule,
+    FormsModule, RouterModule, ButtonModule, InputTextModule, IconFieldModule, InputIconModule,
+    SelectButtonModule, SelectModule, ToastModule, TooltipModule,
     WineCardComponent, WineDetailDialogComponent, CartDrawerComponent, BottleArtComponent,
   ],
   templateUrl: './catalogo.component.html',
@@ -38,6 +42,8 @@ const WHATSAPP_NUMBER = '1XXXXXXXXXX';
 export class CatalogoComponent implements OnInit {
   private readonly wineService = inject(WineService);
   private readonly messages = inject(MessageService);
+  readonly authService = inject(AuthService);
+  readonly layoutService = inject(LayoutService);
   readonly cart = inject(CartService);
 
   readonly wines = signal<Wine[]>([]);
@@ -117,6 +123,14 @@ export class CatalogoComponent implements OnInit {
   clearFilters(): void {
     this.search.set('');
     this.activeCategory.set('Todos');
+  }
+
+  logout(): void {
+    this.authService.logout();
+  }
+
+  toggleDarkMode(): void {
+    this.layoutService.layoutConfig.update(state => ({ ...state, darkTheme: !state.darkTheme }));
   }
 
   /** Monta a mensagem do pedido e abre o WhatsApp do vendedor (link wa.me). */

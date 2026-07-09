@@ -1,64 +1,74 @@
 import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { AuthUser, UserProfile } from '../models/user.model';
+import { Observable, tap } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { AuthUser } from '../models/user.model';
+import { BaseResponse } from '../../../shared/models/base-response.model';
+
+interface LoginResponse {
+    token: string;
+    usuario: Omit<AuthUser, 'token'>;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private readonly STORAGE_KEY = 'auth_user';
+    private readonly API = 'https://localhost:44396/api';
 
     currentUser = signal<AuthUser | null>(this.loadFromStorage());
-    activeProfile = signal<UserProfile | null>(this.loadFromStorage()?.activeProfile ?? null);
 
-    constructor(private router: Router) {}
+    constructor(private http: HttpClient, private router: Router) {}
 
-    // Simula chamada ao backend — substituir pela chamada HTTP real
-    login(email: string, password: string): AuthUser {
-        const mockUsers: Record<string, AuthUser> = {
-            'admin@vinho.com': {
-                id: '1',
-                email: 'admin@vinho.com',
-                name: 'Pedro Admin',
-                token: 'mock-token-admin',
-                profiles: [
-                    { id: 'p1', name: 'Pedro Admin', role: 'admin' },
-                    { id: 'p2', name: 'Pedro Cliente', role: 'cliente' }
-                ]
-            },
-            'cliente@vinho.com': {
-                id: '2',
-                email: 'cliente@vinho.com',
-                name: 'João Cliente',
-                token: 'mock-token-cliente',
-                profiles: [
-                    { id: 'p3', name: 'João Cliente', role: 'cliente' }
-                ]
-            }
-        };
-
-        const user = mockUsers[email];
-        if (!user) throw new Error('Credenciais inválidas');
-
-        this.currentUser.set(user);
-        this.saveToStorage(user);
-        return user;
+    login(email: string, senha: string): Observable<AuthUser> {
+        return this.http.post<BaseResponse<LoginResponse>>(`${this.API}/auth/login`, { email, senha }).pipe(
+            map(r => {
+                if (!r.status || !r.resultado) throw new Error(r.mensagem || 'Credenciais inválidas');
+                const user: AuthUser = { ...r.resultado.usuario, token: r.resultado.token };
+                return user;
+            }),
+            tap(user => {
+                this.currentUser.set(user);
+                this.saveToStorage(user);
+                this.router.navigate([this.rotaInicial()]);
+            })
+        );
     }
 
-    selectProfile(profile: UserProfile): void {
-        const user = this.currentUser();
-        if (!user) return;
+    rotaInicial(): string {
+        if (this.temAcessoAdmin()) return '/';
+        if (this.temAcessoCatalogo()) return '/catalogo';
+        return '/auth/access';
+    }
 
-        const updated = { ...user, activeProfile: profile };
-        this.currentUser.set(updated);
-        this.activeProfile.set(profile);
-        this.saveToStorage(updated);
+    temAcessoAdmin(): boolean {
+        return (this.currentUser()?.acessos ?? []).some(a => a.modulo !== 'catalogo' && a.visualizar);
+    }
 
-        const route = profile.role === 'admin' ? '/' : '/catalogo';
-        this.router.navigate([route]);
+    temAcessoCatalogo(): boolean {
+        return this.hasAccess('catalogo');
+    }
+
+    /** true quando o usuário pode alternar entre a área administrativa e o catálogo do cliente. */
+    temMultiplosPerfis(): boolean {
+        return this.temAcessoAdmin() && this.temAcessoCatalogo();
+    }
+
+    refreshMe(): Observable<AuthUser | null> {
+        return this.http.get<BaseResponse<Omit<AuthUser, 'token'>>>(`${this.API}/auth/me`).pipe(
+            map(r => {
+                const atual = this.currentUser();
+                if (!r.status || !r.resultado || !atual) return null;
+                const user: AuthUser = { ...r.resultado, token: atual.token };
+                this.currentUser.set(user);
+                this.saveToStorage(user);
+                return user;
+            })
+        );
     }
 
     logout(): void {
         this.currentUser.set(null);
-        this.activeProfile.set(null);
         localStorage.removeItem(this.STORAGE_KEY);
         this.router.navigate(['/auth/login']);
     }
@@ -67,8 +77,13 @@ export class AuthService {
         return !!this.currentUser();
     }
 
-    hasMultipleProfiles(): boolean {
-        return (this.currentUser()?.profiles?.length ?? 0) > 1;
+    getToken(): string | null {
+        return this.currentUser()?.token ?? null;
+    }
+
+    hasAccess(modulo: string, tipo: 'visualizar' | 'inserir' | 'editar' | 'remover' = 'visualizar'): boolean {
+        const acesso = this.currentUser()?.acessos?.find(a => a.modulo === modulo);
+        return !!acesso?.[tipo];
     }
 
     private saveToStorage(user: AuthUser): void {

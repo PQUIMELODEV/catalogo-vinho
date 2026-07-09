@@ -5,12 +5,15 @@ import { Documentation } from './app/pages/documentation/documentation';
 import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
 import { Login } from './app/pages/auth/login';
+import { authGuard } from './app/shared/guards/auth.guard';
+import { moduleGuard } from './app/shared/guards/module.guard';
 
 export const appRoutes: Routes = [
     { path: 'login', component: Login },
     {
         path: '',
         component: AppLayout,
+        canActivate: [authGuard],
         children: [
             { path: '', component: Dashboard },
             { path: 'dashboard', component: Dashboard },
@@ -22,6 +25,8 @@ export const appRoutes: Routes = [
     },
     {
         path: 'catalogo',
+        canActivate: [authGuard, moduleGuard],
+        data: { modulo: 'catalogo' },
         loadChildren: () =>
             import('./app/catalogo/catalogo.routes').then(m => m.CATALOGO_ROUTES)
     },

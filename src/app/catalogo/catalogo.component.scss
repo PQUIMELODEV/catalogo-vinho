@@ -7,16 +7,16 @@
 
 :host {
   // tokens do tema (com fallback)
-  --c-ground: var(--surface-ground, #eef1f6);
-  --c-card: var(--surface-card, #ffffff);
-  --c-card-2: var(--surface-100, #f1f5f9);
-  --c-border: var(--surface-border, #e3e8ef);
-  --c-text: var(--text-color, #1f2733);
-  --c-muted: var(--text-color-secondary, #64748b);
-  --c-hover: var(--surface-hover, #f1f5f9);
-  --c-primary: var(--primary-color, #10b981);
-  --c-primary-text: var(--primary-color-text, #ffffff);
-  --c-radius: var(--content-border-radius, 12px);
+  --c-ground: var(--p-content-hover-background, #eef1f6);
+  --c-card: var(--p-content-background, #ffffff);
+  --c-card-2: var(--p-surface-100, #f1f5f9);
+  --c-border: var(--p-content-border-color, #e3e8ef);
+  --c-text: var(--p-text-color, #1f2733);
+  --c-muted: var(--p-text-muted-color, #64748b);
+  --c-hover: var(--p-content-hover-background, #f1f5f9);
+  --c-primary: var(--p-primary-color, #10b981);
+  --c-primary-text: var(--p-primary-contrast-color, #ffffff);
+  --c-radius: var(--p-content-border-radius, 12px);
 
   // acentos da marca (vinho) — independentes do tema
   --wine: #7c2d3a;
@@ -31,8 +31,7 @@
   min-height: 100%;
 }
 
-:host-context(.dark),
-:host-context([data-theme='dark']) {
+:host-context(.app-dark) {
   --wine: #d98a98;
   --wine-soft: color-mix(in srgb, #be5062 16%, transparent);
 }
@@ -58,6 +57,7 @@ h1, h2, h3, h4 { margin: 0; }
 .brand__text strong { color: var(--wine); font-weight: 800; }
 
 .topbar__search { flex: 1; max-width: 560px; }
+.topbar__actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 :host ::ng-deep {
   .topbar__search,
   .topbar__search p-iconfield,
@@ -153,9 +153,9 @@ h1, h2, h3, h4 { margin: 0; }
   .topbar { width: 100%; }
   .topbar__inner {
     flex-wrap: wrap; height: auto; padding: 10px 14px; gap: 8px;
-    // linha 1: logo + carrinho; linha 2: busca
+    // linha 1: logo + ações; linha 2: busca
     > .brand { flex: 1; min-width: 0; }
-    > p-button { flex-shrink: 0; }
+    > .topbar__actions { flex-shrink: 0; }
   }
   .topbar__search { order: 3; flex: 0 0 100%; max-width: 100%; min-width: 0; }
 

@@ -9,8 +9,6 @@ import { RippleModule } from 'primeng/ripple';
 import { MessageModule } from 'primeng/message';
 import { AppFloatingConfigurator } from '../../layout/component/app.floatingconfigurator';
 import { AuthService } from './services/auth.service';
-import { ProfileSelectorComponent } from './components/profile-selector.component';
-import { AuthUser, UserProfile } from './models/user.model';
 
 @Component({
     selector: 'app-login',
@@ -24,17 +22,10 @@ import { AuthUser, UserProfile } from './models/user.model';
         RouterModule,
         RippleModule,
         MessageModule,
-        AppFloatingConfigurator,
-        ProfileSelectorComponent
+        AppFloatingConfigurator
     ],
     template: `
         <app-floating-configurator />
-
-        <app-profile-selector
-            [visible]="showProfileSelector"
-            [profiles]="userProfiles"
-            (profileSelected)="onProfileSelected($event)"
-        />
 
         <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-screen overflow-hidden">
             <div class="flex flex-col items-center justify-center">
@@ -110,9 +101,6 @@ export class Login {
     rememberMe = false;
     loading = false;
     errorMessage = '';
-    showProfileSelector = false;
-    userProfiles: UserProfile[] = [];
-    private loggedUser: AuthUser | null = null;
 
     constructor(private authService: AuthService) {}
 
@@ -125,25 +113,14 @@ export class Login {
         this.loading = true;
         this.errorMessage = '';
 
-        try {
-            const user = this.authService.login(this.email, this.password);
-            this.loggedUser = user;
-
-            if (user.profiles.length > 1) {
-                this.userProfiles = user.profiles;
-                this.showProfileSelector = true;
-            } else {
-                this.authService.selectProfile(user.profiles[0]);
+        this.authService.login(this.email, this.password).subscribe({
+            next: () => {
+                this.loading = false;
+            },
+            error: () => {
+                this.errorMessage = 'E-mail ou senha incorretos.';
+                this.loading = false;
             }
-        } catch {
-            this.errorMessage = 'E-mail ou senha incorretos.';
-        } finally {
-            this.loading = false;
-        }
-    }
-
-    onProfileSelected(profile: UserProfile): void {
-        this.showProfileSelector = false;
-        setTimeout(() => this.authService.selectProfile(profile), 350);
+        });
     }
 }
