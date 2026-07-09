@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
@@ -40,7 +40,26 @@ import { BottleArtComponent } from './bottle-art.component';
               }
               -->
             </div>
-            <app-bottle-art [wine]="w" [big]="true" />
+            @if (w.photos.length) {
+              <div class="dialog__carousel" tabindex="0" (keydown.arrowleft)="fotoAnterior()" (keydown.arrowright)="fotoProxima()">
+                <img class="dialog__photo" [src]="w.photos[fotoAtivaIndex()]" [alt]="w.name" />
+                @if (w.photos.length > 1) {
+                  <button type="button" class="dialog__nav dialog__nav--prev" (click)="fotoAnterior()" aria-label="Foto anterior">
+                    <i class="pi pi-chevron-left"></i>
+                  </button>
+                  <button type="button" class="dialog__nav dialog__nav--next" (click)="fotoProxima()" aria-label="Próxima foto">
+                    <i class="pi pi-chevron-right"></i>
+                  </button>
+                  <div class="dialog__dots">
+                    @for (foto of w.photos; track foto; let i = $index) {
+                      <button type="button" class="dialog__dot" [class.is-active]="i === fotoAtivaIndex()" (click)="fotoAtivaIndex.set(i)" [attr.aria-label]="'Ir para foto ' + (i + 1)"></button>
+                    }
+                  </div>
+                }
+              </div>
+            } @else {
+              <app-bottle-art [wine]="w" [big]="true" />
+            }
           </div>
 
           <div class="dialog__content">
@@ -140,6 +159,26 @@ export class WineDetailDialogComponent {
 
   readonly kind = signal<PurchaseKind>('unit');
   readonly qtyModel = signal(1);
+  readonly fotoAtivaIndex = signal(0);
+
+  constructor() {
+    effect(() => {
+      this.wine();
+      this.fotoAtivaIndex.set(0);
+    });
+  }
+
+  fotoAnterior(): void {
+    const total = this.wine()?.photos.length ?? 0;
+    if (!total) return;
+    this.fotoAtivaIndex.update((i) => (i - 1 + total) % total);
+  }
+
+  fotoProxima(): void {
+    const total = this.wine()?.photos.length ?? 0;
+    if (!total) return;
+    this.fotoAtivaIndex.update((i) => (i + 1) % total);
+  }
 
   readonly isOut = computed(() => (this.wine()?.stock ?? 0) === 0);
   readonly totalPrice = computed(() => {

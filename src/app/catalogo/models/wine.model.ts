@@ -100,6 +100,8 @@ export interface Wine {
     sodio: string;
   };
   featured: boolean;
+  /** URLs das fotos reais do vinho (VinhoFoto), em ordem. Vazio até haver upload. */
+  photos: string[];
 }
 
 export type PurchaseKind = 'unit' | 'box';

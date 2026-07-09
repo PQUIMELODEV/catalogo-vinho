@@ -20,6 +20,7 @@ import { VinhoService } from '@/app/shared/services/vinho.service';
 import { PaisService } from '@/app/shared/services/pais.service';
 import { TipoVinhoService } from '@/app/shared/services/tipo-vinho.service';
 import { Pais, TipoVinho, Vinho } from '@/app/catalogo/models/wine.model';
+import { VinhoFotosDialogComponent } from './vinho-fotos-dialog.component';
 
 @Component({
     selector: 'app-vinhos',
@@ -28,7 +29,7 @@ import { Pais, TipoVinho, Vinho } from '@/app/catalogo/models/wine.model';
         CommonModule, FormsModule, TableModule, ButtonModule, DialogModule,
         InputTextModule, TextareaModule, InputNumberModule, SelectModule,
         ToggleSwitchModule, ToolbarModule, ToastModule, ConfirmDialogModule,
-        IconFieldModule, InputIconModule, TagModule
+        IconFieldModule, InputIconModule, TagModule, VinhoFotosDialogComponent
     ],
     providers: [ConfirmationService],
     template: `
@@ -83,6 +84,7 @@ import { Pais, TipoVinho, Vinho } from '@/app/catalogo/models/wine.model';
                         <p-tag [value]="vinho.ativo ? 'Ativo' : 'Inativo'" [severity]="vinho.ativo ? 'success' : 'danger'" />
                     </td>
                     <td>
+                        <p-button icon="pi pi-images" class="mr-2" [rounded]="true" [outlined]="true" (click)="fotosVinho.set(vinho)" />
                         <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="edit(vinho)" />
                         <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="confirmDelete(vinho)" />
                     </td>
@@ -149,6 +151,8 @@ import { Pais, TipoVinho, Vinho } from '@/app/catalogo/models/wine.model';
                 <p-button label="Salvar" icon="pi pi-check" (click)="save()" />
             </ng-template>
         </p-dialog>
+
+        <app-vinho-fotos-dialog [vinho]="fotosVinho()" (close)="fotosVinho.set(null)" />
     `
 })
 export class VinhosComponent implements OnInit {
@@ -160,6 +164,7 @@ export class VinhosComponent implements OnInit {
     submitted = false;
     editingId: string | null = null;
     form: Omit<Vinho, 'id' | 'criadoEm' | 'paisNome' | 'tipoVinhoNome'> = this.emptyForm();
+    fotosVinho = signal<Vinho | null>(null);
 
     @ViewChild('dt') dt!: Table;
 

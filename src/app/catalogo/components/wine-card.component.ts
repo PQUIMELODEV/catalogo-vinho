@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
@@ -30,7 +30,7 @@ import { BottleArtComponent } from './bottle-art.component';
     }
     .wine-card.is-out { opacity: .75; }
 
-    /* --- Área da imagem --- */
+    /* --- Área da imagem / carrossel --- */
     .wine-card__media {
       position: relative;
       width: 100%;
@@ -43,6 +43,52 @@ import { BottleArtComponent } from './bottle-art.component';
       border: none;
       border-bottom: 1px solid var(--p-surface-border);
     }
+    .wine-card__photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .wine-card__nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0, 0, 0, .45);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity .15s, background .15s;
+    }
+    .wine-card__media:hover .wine-card__nav { opacity: 1; }
+    .wine-card__nav:hover { background: rgba(0, 0, 0, .7); }
+    .wine-card__nav--prev { left: 8px; }
+    .wine-card__nav--next { right: 8px; }
+    .wine-card__nav .pi { font-size: 11px; }
+    .wine-card__dots {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 4px;
+      z-index: 1;
+    }
+    .wine-card__dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .55);
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+    .wine-card__dot.is-active { background: #fff; }
     .wine-card__tags {
       position: absolute;
       top: 10px;
@@ -148,7 +194,14 @@ import { BottleArtComponent } from './bottle-art.component';
   `],
   template: `
     <article class="wine-card" [class.is-out]="isOut()">
-      <button type="button" class="wine-card__media" (click)="open.emit(wine())" [attr.aria-label]="'Ver ' + wine().name">
+      <div
+        class="wine-card__media"
+        role="button"
+        tabindex="0"
+        [attr.aria-label]="'Ver ' + wine().name"
+        (click)="open.emit(wine())"
+        (keyup.enter)="open.emit(wine())"
+      >
         <div class="wine-card__tags">
           @if (isOut()) {
             <p-tag severity="danger" value="Esgotado" />
@@ -161,9 +214,26 @@ import { BottleArtComponent } from './bottle-art.component';
           }
           -->
         </div>
-        <app-bottle-art [wine]="wine()" />
+        @if (wine().photos.length) {
+          <img class="wine-card__photo" [src]="wine().photos[fotoIndex()]" [alt]="wine().name" />
+          @if (wine().photos.length > 1) {
+            <button type="button" class="wine-card__nav wine-card__nav--prev" (click)="fotoAnterior($event)" aria-label="Foto anterior">
+              <i class="pi pi-chevron-left"></i>
+            </button>
+            <button type="button" class="wine-card__nav wine-card__nav--next" (click)="fotoProxima($event)" aria-label="Próxima foto">
+              <i class="pi pi-chevron-right"></i>
+            </button>
+            <div class="wine-card__dots">
+              @for (foto of wine().photos; track foto; let i = $index) {
+                <button type="button" class="wine-card__dot" [class.is-active]="i === fotoIndex()" (click)="irParaFoto($event, i)" [attr.aria-label]="'Ir para foto ' + (i + 1)"></button>
+              }
+            </div>
+          }
+        } @else {
+          <app-bottle-art [wine]="wine()" />
+        }
         <span class="wine-card__cat">{{ wine().category }}</span>
-      </button>
+      </div>
 
       <div class="wine-card__body">
         <div>
@@ -212,4 +282,22 @@ export class WineCardComponent {
   readonly add = output<Wine>();
 
   readonly isOut = computed(() => this.wine().stock === 0);
+  readonly fotoIndex = signal(0);
+
+  fotoAnterior(event: Event): void {
+    event.stopPropagation();
+    const total = this.wine().photos.length;
+    this.fotoIndex.update((i) => (i - 1 + total) % total);
+  }
+
+  fotoProxima(event: Event): void {
+    event.stopPropagation();
+    const total = this.wine().photos.length;
+    this.fotoIndex.update((i) => (i + 1) % total);
+  }
+
+  irParaFoto(event: Event, index: number): void {
+    event.stopPropagation();
+    this.fotoIndex.set(index);
+  }
 }
