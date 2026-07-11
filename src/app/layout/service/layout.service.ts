@@ -1,9 +1,6 @@
 import { Injectable, effect, signal, computed } from '@angular/core';
 
 export interface LayoutConfig {
-    preset: string;
-    primary: string;
-    surface: string | undefined | null;
     darkTheme: boolean;
     menuMode: string;
 }
@@ -22,9 +19,6 @@ interface LayoutState {
 })
 export class LayoutService {
     layoutConfig = signal<LayoutConfig>({
-        preset: 'Aura',
-        primary: 'emerald',
-        surface: null,
         darkTheme: true,
         menuMode: 'static'
     });
@@ -43,10 +37,6 @@ export class LayoutService {
     isSidebarActive = computed(() => this.layoutState().overlayMenuActive || this.layoutState().mobileMenuActive);
 
     isDarkTheme = computed(() => this.layoutConfig().darkTheme);
-
-    getPrimary = computed(() => this.layoutConfig().primary);
-
-    getSurface = computed(() => this.layoutConfig().surface);
 
     isOverlay = computed(() => this.layoutConfig().menuMode === 'overlay');
 

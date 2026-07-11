@@ -9,9 +9,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
     const authReq = token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
 
+    const isLoginRequest = req.url.includes('/auth/login');
+
     return next(authReq).pipe(
         catchError(err => {
-            if (err.status === 401) {
+            if (err.status === 401 && !isLoginRequest) {
                 authService.logout();
             }
             return throwError(() => err);

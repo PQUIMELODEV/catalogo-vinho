@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -54,8 +54,8 @@ import { AuthService } from './services/auth.service';
                             <span class="text-muted-color font-medium">Entre com sua conta para continuar</span>
                         </div>
 
-                        @if (errorMessage) {
-                            <p-message severity="error" [text]="errorMessage" styleClass="mb-6 w-full" />
+                        @if (errorMessage()) {
+                            <p-message severity="error" [text]="errorMessage()" styleClass="mb-6 w-full" />
                         }
 
                         <div>
@@ -85,7 +85,7 @@ import { AuthService } from './services/auth.service';
                             <p-button
                                 label="Entrar"
                                 styleClass="w-full"
-                                [loading]="loading"
+                                [loading]="loading()"
                                 (onClick)="onLogin()"
                             />
                         </div>
@@ -99,27 +99,27 @@ export class Login {
     email = '';
     password = '';
     rememberMe = false;
-    loading = false;
-    errorMessage = '';
+    loading = signal(false);
+    errorMessage = signal('');
 
     constructor(private authService: AuthService) {}
 
     onLogin(): void {
         if (!this.email || !this.password) {
-            this.errorMessage = 'Preencha e-mail e senha.';
+            this.errorMessage.set('Preencha e-mail e senha.');
             return;
         }
 
-        this.loading = true;
-        this.errorMessage = '';
+        this.loading.set(true);
+        this.errorMessage.set('');
 
         this.authService.login(this.email, this.password).subscribe({
             next: () => {
-                this.loading = false;
+                this.loading.set(false);
             },
             error: () => {
-                this.errorMessage = 'E-mail ou senha incorretos.';
-                this.loading = false;
+                this.errorMessage.set('E-mail ou senha incorretos.');
+                this.loading.set(false);
             }
         });
     }
