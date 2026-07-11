@@ -133,6 +133,10 @@ export class CatalogoComponent implements OnInit {
     this.layoutService.layoutConfig.update(state => ({ ...state, darkTheme: !state.darkTheme }));
   }
 
+  scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   /** Monta a mensagem do pedido e abre o WhatsApp do vendedor (link wa.me). */
   checkout(): void {
     const lines = this.cart.lines();
