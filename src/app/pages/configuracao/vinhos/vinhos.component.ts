@@ -126,6 +126,16 @@ import { VinhoFotosDialogComponent } from './vinho-fotos-dialog.component';
                             <p-inputnumber id="precoPromocional" [(ngModel)]="form.precoPromocional" mode="currency" currency="BRL" locale="pt-BR" fluid />
                         </div>
                     </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="quantidadePorCaixa" class="block font-bold mb-2">Unidades por Caixa</label>
+                            <p-inputnumber id="quantidadePorCaixa" [(ngModel)]="form.quantidadePorCaixa" [useGrouping]="false" fluid />
+                        </div>
+                        <div>
+                            <label for="valorCaixa" class="block font-bold mb-2">Preço da Caixa Fechada</label>
+                            <p-inputnumber id="valorCaixa" [(ngModel)]="form.valorCaixa" mode="currency" currency="BRL" locale="pt-BR" fluid />
+                        </div>
+                    </div>
                     <div class="grid grid-cols-3 gap-4">
                         <div>
                             <label for="safra" class="block font-bold mb-2">Safra *</label>
@@ -184,7 +194,7 @@ export class VinhosComponent implements OnInit {
     }
 
     emptyForm(): Omit<Vinho, 'id' | 'criadoEm' | 'paisNome' | 'tipoVinhoNome'> {
-        return { nome: '', descricao: undefined, preco: 0, precoPromocional: undefined, paisId: 0, tipoVinhoId: 0, safra: new Date().getFullYear(), teorAlcoolico: 0, volumeMl: 750, ativo: true };
+        return { nome: '', descricao: undefined, preco: 0, precoPromocional: undefined, quantidadePorCaixa: 0, valorCaixa: undefined, paisId: 0, tipoVinhoId: 0, safra: new Date().getFullYear(), teorAlcoolico: 0, volumeMl: 750, ativo: true };
     }
 
     load() {
@@ -199,7 +209,7 @@ export class VinhosComponent implements OnInit {
     openNew() { this.form = this.emptyForm(); this.editingId = null; this.submitted = false; this.dialogVisible = true; }
 
     edit(v: Vinho) {
-        this.form = { nome: v.nome, descricao: v.descricao, preco: v.preco, precoPromocional: v.precoPromocional, paisId: v.paisId, tipoVinhoId: v.tipoVinhoId, safra: v.safra, teorAlcoolico: v.teorAlcoolico, volumeMl: v.volumeMl, ativo: v.ativo };
+        this.form = { nome: v.nome, descricao: v.descricao, preco: v.preco, precoPromocional: v.precoPromocional, quantidadePorCaixa: v.quantidadePorCaixa, valorCaixa: v.valorCaixa, paisId: v.paisId, tipoVinhoId: v.tipoVinhoId, safra: v.safra, teorAlcoolico: v.teorAlcoolico, volumeMl: v.volumeMl, ativo: v.ativo };
         this.editingId = v.id;
         this.submitted = false;
         this.dialogVisible = true;

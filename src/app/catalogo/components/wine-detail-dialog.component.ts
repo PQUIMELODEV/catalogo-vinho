@@ -109,18 +109,19 @@ import { BottleArtComponent } from './bottle-art.component';
             -->
 
             <div class="dialog__buy">
-              <!-- Compra por caixa depende de Wine.priceBox/boxQty, que ainda não existem no back-end (Vinho). Reative quando houver esse dado real.
-              <div class="kind-toggle">
-                <button type="button" class="kind-toggle__opt" [class.is-active]="kind() === 'unit'" (click)="kind.set('unit')">
-                  <span class="kt-label">Avulso</span>
-                  <span class="kt-price">{{ w.priceUnit | currency: 'BRL' : 'symbol' : '1.0-0' }}</span>
-                </button>
-                <button type="button" class="kind-toggle__opt" [class.is-active]="kind() === 'box'" (click)="kind.set('box')">
-                  <span class="kt-label">Caixa · {{ w.boxQty }} un</span>
-                  <span class="kt-price">{{ w.priceBox | currency: 'BRL' : 'symbol' : '1.0-0' }}</span>
-                </button>
-              </div>
-              -->
+              @if (hasBox()) {
+                <div class="kind-toggle">
+                  <button type="button" class="kind-toggle__opt" [class.is-active]="kind() === 'unit'" (click)="kind.set('unit')">
+                    <span class="kt-label">Avulso</span>
+                    <span class="kt-price">{{ w.priceUnit | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+                  </button>
+                  <button type="button" class="kind-toggle__opt" [class.is-active]="kind() === 'box'" (click)="kind.set('box')">
+                    <span class="kt-label">Caixa fechada · {{ w.boxQty }} un</span>
+                    <span class="kt-price">{{ w.priceBox | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+                    <span class="kt-sub">Unidade na caixa: {{ boxUnitPrice() | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+                  </button>
+                </div>
+              }
               <div class="dialog__buy-row">
                 <p-inputNumber
                   [(ngModel)]="qtyModel"
@@ -138,7 +139,7 @@ import { BottleArtComponent } from './bottle-art.component';
                   pButton
                   type="button"
                   class="flex-1"
-                  [label]="isOut() ? 'Esgotado' : ('Adicionar — ' + (totalPrice() | currency: 'BRL' : 'symbol' : '1.0-0'))"
+                  [label]="isOut() ? 'Esgotado' : ('Adicionar — ' + (totalPrice() | currency: 'BRL' : 'symbol' : '1.2-2'))"
                   icon="pi pi-shopping-cart"
                   [disabled]="isOut()"
                   (click)="confirm()"
@@ -165,8 +166,18 @@ export class WineDetailDialogComponent {
     effect(() => {
       this.wine();
       this.fotoAtivaIndex.set(0);
+      this.kind.set('unit');
     });
   }
+
+  readonly hasBox = computed(() => {
+    const w = this.wine();
+    return !!w && w.boxQty > 0 && w.priceBox > 0;
+  });
+  readonly boxUnitPrice = computed(() => {
+    const w = this.wine();
+    return w && this.hasBox() ? w.priceBox / w.boxQty : 0;
+  });
 
   fotoAnterior(): void {
     const total = this.wine()?.photos.length ?? 0;
@@ -184,9 +195,8 @@ export class WineDetailDialogComponent {
   readonly totalPrice = computed(() => {
     const w = this.wine();
     if (!w) return 0;
-    // Preço de caixa depende de Wine.priceBox, que ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
-    // const unit = this.kind() === 'box' ? w.priceBox : w.priceUnit;
-    return w.priceUnit * this.qtyModel();
+    const unit = this.kind() === 'box' ? w.priceBox : w.priceUnit;
+    return unit * this.qtyModel();
   });
 
   confirm(): void {

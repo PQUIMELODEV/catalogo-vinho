@@ -62,10 +62,10 @@ export class WineService {
       category: this.normalizeCategory(v.tipoVinhoNome),
       grape: '',
       year: v.safra,
-      // Preço/quantidade de caixa ainda não existem no back-end (Vinho). Reative quando houver esse dado real.
-      priceBox: 0,
+      priceBox: v.valorCaixa ?? 0,
       priceUnit: v.preco,
-      boxQty: 0,
+      pricePromo: v.precoPromocional,
+      boxQty: v.quantidadePorCaixa,
       stock: quantidadeEmEstoque,
       abv: `${v.teorAlcoolico}%`,
       // Corpo e temperatura de serviço ainda não existem no back-end (Vinho). Reative quando houver esse dado real.
@@ -81,16 +81,14 @@ export class WineService {
     };
   }
 
-  /** O back-end guarda o tipo sem acento (ex.: "Rose"); normaliza para o rótulo usado na UI. */
+  /** Normaliza o nome do TipoVinho (ex.: "Vinho Branco", "Tinto Reserva") para o rótulo fixo usado na UI. */
   private normalizeCategory(nome?: string): WineCategory {
-    switch ((nome ?? '').trim().toLowerCase()) {
-      case 'tinto': return 'Tinto';
-      case 'branco': return 'Branco';
-      case 'rose':
-      case 'rosé': return 'Rosé';
-      case 'espumante': return 'Espumante';
-      case 'sobremesa': return 'Sobremesa';
-      default: return 'Tinto';
-    }
+    const n = (nome ?? '').trim().toLowerCase();
+    if (n.includes('espumante')) return 'Espumante';
+    if (n.includes('sobremesa')) return 'Sobremesa';
+    if (n.includes('rose') || n.includes('rosé')) return 'Rosé';
+    if (n.includes('branco')) return 'Branco';
+    if (n.includes('tinto')) return 'Tinto';
+    return 'Tinto';
   }
 }

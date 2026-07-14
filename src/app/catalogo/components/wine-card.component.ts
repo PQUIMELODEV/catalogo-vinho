@@ -184,6 +184,22 @@ import { BottleArtComponent } from './bottle-art.component';
       letter-spacing: -.3px;
       color: var(--p-text-color);
     }
+    .price__val--strike {
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: line-through;
+      opacity: .55;
+    }
+    .price__val--promo {
+      color: var(--p-red-500, #ef4444);
+    }
+    .price__sub {
+      display: block;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--p-primary-color);
+      margin-top: 2px;
+    }
 
     /* --- Ações --- */
     .wine-card__actions {
@@ -250,15 +266,21 @@ import { BottleArtComponent } from './bottle-art.component';
         -->
         <div class="wine-card__prices">
           <div class="price">
-            <span class="price__label">Preço</span>
-            <span class="price__val">{{ wine().priceUnit | currency: 'BRL' : 'symbol' : '1.0-0' }}</span>
+            <span class="price__label">Avulso</span>
+            @if (hasPromo()) {
+              <span class="price__val price__val--strike">{{ wine().priceUnit | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+              <span class="price__val price__val--promo">{{ wine().pricePromo | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+            } @else {
+              <span class="price__val">{{ wine().priceUnit | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+            }
           </div>
-          <!-- Preço de caixa ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
-          <div class="price price--box">
-            <span class="price__label">Caixa ({{ wine().boxQty }})</span>
-            <span class="price__val">{{ wine().priceBox | currency: 'BRL' : 'symbol' : '1.0-0' }}</span>
-          </div>
-          -->
+          @if (hasBox()) {
+            <div class="price price--box">
+              <span class="price__label">Caixa fechada · {{ wine().boxQty }} un</span>
+              <span class="price__val">{{ wine().priceBox | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+              <span class="price__sub">Unidade na caixa: {{ boxUnitPrice() | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+            </div>
+          }
         </div>
         <div class="wine-card__actions">
           <button pButton type="button" label="Detalhes" severity="secondary" [outlined]="true" size="small" (click)="open.emit(wine())"></button>
@@ -283,6 +305,16 @@ export class WineCardComponent {
 
   readonly isOut = computed(() => this.wine().stock === 0);
   readonly fotoIndex = signal(0);
+
+  readonly hasBox = computed(() => this.wine().boxQty > 0 && this.wine().priceBox > 0);
+  readonly boxUnitPrice = computed(() => {
+    const w = this.wine();
+    return this.hasBox() ? w.priceBox / w.boxQty : 0;
+  });
+  readonly hasPromo = computed(() => {
+    const w = this.wine();
+    return w.pricePromo != null && w.pricePromo < w.priceUnit;
+  });
 
   fotoAnterior(event: Event): void {
     event.stopPropagation();

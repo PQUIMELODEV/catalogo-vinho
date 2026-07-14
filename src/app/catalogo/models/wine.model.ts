@@ -19,6 +19,8 @@ export interface Vinho {
   descricao?: string;
   preco: number;
   precoPromocional?: number;
+  quantidadePorCaixa: number;
+  valorCaixa?: number;
   paisId: number;
   paisNome?: string;
   tipoVinhoId: number;
@@ -86,6 +88,7 @@ export interface Wine {
   year: number;
   priceBox: number;
   priceUnit: number;
+  pricePromo?: number;
   boxQty: number;
   stock: number;
   abv: string;
