@@ -75,6 +75,12 @@ export class AppMenu {
                         icon: 'pi pi-fw pi-users',
                         routerLink: ['/configuracao/usuarios'],
                         modulo: 'usuarios'
+                    },
+                    {
+                        label: 'Clientes',
+                        icon: 'pi pi-fw pi-id-card',
+                        routerLink: ['/configuracao/clientes'],
+                        modulo: 'clientes'
                     }
                 ]
             },

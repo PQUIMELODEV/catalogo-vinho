@@ -43,5 +43,11 @@ export const CONFIGURACAO_ROUTES: Routes = [
         loadComponent: () => import('./usuarios/usuarios.component').then(m => m.UsuariosComponent),
         canActivate: [moduleGuard],
         data: { modulo: 'usuarios' }
+    },
+    {
+        path: 'clientes',
+        loadComponent: () => import('./clientes/clientes.component').then(m => m.ClientesComponent),
+        canActivate: [moduleGuard],
+        data: { modulo: 'clientes' }
     }
 ];

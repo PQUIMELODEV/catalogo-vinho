@@ -25,5 +25,6 @@ export const MODULOS: { key: string; label: string }[] = [
     { key: 'estoque', label: 'Estoque' },
     { key: 'movimentacoes', label: 'Movimentações' },
     { key: 'usuarios', label: 'Usuários' },
+    { key: 'clientes', label: 'Clientes' },
     { key: 'catalogo', label: 'Catálogo (Cliente)' }
 ];
