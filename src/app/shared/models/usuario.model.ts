@@ -5,6 +5,8 @@ export interface Usuario {
     nome: string;
     email: string;
     ativo: boolean;
+    clienteId?: number;
+    clienteNome?: string;
     criadoEm: string;
     acessos: Acesso[];
 }
@@ -14,6 +16,7 @@ export interface UsuarioRequest {
     email: string;
     senha?: string;
     ativo: boolean;
+    clienteId?: number;
     acessos: Acesso[];
 }
 
@@ -26,5 +29,6 @@ export const MODULOS: { key: string; label: string }[] = [
     { key: 'movimentacoes', label: 'Movimentações' },
     { key: 'usuarios', label: 'Usuários' },
     { key: 'clientes', label: 'Clientes' },
+    { key: 'pedidos', label: 'Pedidos' },
     { key: 'catalogo', label: 'Catálogo (Cliente)' }
 ];

@@ -81,6 +81,12 @@ export class AppMenu {
                         icon: 'pi pi-fw pi-id-card',
                         routerLink: ['/configuracao/clientes'],
                         modulo: 'clientes'
+                    },
+                    {
+                        label: 'Pedidos',
+                        icon: 'pi pi-fw pi-shopping-cart',
+                        routerLink: ['/configuracao/pedidos'],
+                        modulo: 'pedidos'
                     }
                 ]
             },

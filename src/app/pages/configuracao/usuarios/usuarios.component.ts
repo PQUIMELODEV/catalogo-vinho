@@ -15,15 +15,19 @@ import { InputIconModule } from 'primeng/inputicon';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TagModule } from 'primeng/tag';
+import { SelectModule } from 'primeng/select';
 import { UsuarioService } from '@/app/shared/services/usuario.service';
+import { ClienteService } from '@/app/shared/services/cliente.service';
 import { Usuario, UsuarioRequest, MODULOS } from '@/app/shared/models/usuario.model';
 import { Acesso } from '@/app/pages/auth/models/user.model';
+import { Cliente } from '@/app/shared/models/cliente.model';
 
 interface UsuarioForm {
     nome: string;
     email: string;
     senha: string;
     ativo: boolean;
+    clienteId: number | null;
     acessos: Acesso[];
 }
 
@@ -33,7 +37,7 @@ interface UsuarioForm {
     imports: [
         CommonModule, FormsModule, TableModule, ButtonModule, DialogModule,
         InputTextModule, PasswordModule, ToolbarModule, ToastModule, ConfirmDialogModule,
-        IconFieldModule, InputIconModule, ToggleSwitchModule, CheckboxModule, TagModule
+        IconFieldModule, InputIconModule, ToggleSwitchModule, CheckboxModule, TagModule, SelectModule
     ],
     providers: [ConfirmationService],
     template: `
@@ -68,6 +72,7 @@ interface UsuarioForm {
                     <th pSortableColumn="nome" style="min-width:14rem">Nome <p-sortIcon field="nome" /></th>
                     <th pSortableColumn="email" style="min-width:16rem">E-mail <p-sortIcon field="email" /></th>
                     <th style="min-width:10rem">Acessos</th>
+                    <th style="min-width:12rem">Cliente vinculado</th>
                     <th pSortableColumn="ativo" style="min-width:8rem">Status <p-sortIcon field="ativo" /></th>
                     <th style="min-width:10rem"></th>
                 </tr>
@@ -79,6 +84,7 @@ interface UsuarioForm {
                     <td>{{ usuario.nome }}</td>
                     <td>{{ usuario.email }}</td>
                     <td>{{ contarAcessos(usuario.acessos) }} de {{ modulos.length }} módulos</td>
+                    <td>{{ usuario.clienteNome || '—' }}</td>
                     <td>
                         <p-tag [value]="usuario.ativo ? 'Ativo' : 'Inativo'" [severity]="usuario.ativo ? 'success' : 'danger'" />
                     </td>
@@ -111,6 +117,12 @@ interface UsuarioForm {
                     <div class="flex items-center gap-3">
                         <p-toggleswitch inputId="ativo" [(ngModel)]="form.ativo" />
                         <label for="ativo" class="font-bold">Ativo</label>
+                    </div>
+                    <div>
+                        <label for="clienteVinculado" class="block font-bold mb-2">Cliente vinculado</label>
+                        <p-select id="clienteVinculado" [options]="clientes()" [(ngModel)]="form.clienteId" optionLabel="nome" optionValue="id"
+                            placeholder="Nenhum" [showClear]="true" filter fluid />
+                        <small class="text-muted-color block mt-1">Necessário para o usuário conseguir finalizar pedidos pelo catálogo.</small>
                     </div>
                     <div>
                         <label class="block font-bold mb-2">Acessos</label>
@@ -148,6 +160,7 @@ interface UsuarioForm {
 })
 export class UsuariosComponent implements OnInit {
     usuarios = signal<Usuario[]>([]);
+    clientes = signal<Cliente[]>([]);
     selected: Usuario[] = [];
     dialogVisible = false;
     submitted = false;
@@ -159,12 +172,16 @@ export class UsuariosComponent implements OnInit {
 
     constructor(
         private usuarioService: UsuarioService,
+        private clienteService: ClienteService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         private chRef: ChangeDetectorRef
     ) {}
 
-    ngOnInit() { this.load(); }
+    ngOnInit() {
+        this.load();
+        this.clienteService.getClientes().subscribe(d => this.clientes.set(d));
+    }
 
     load() {
         this.usuarioService.getUsuarios().subscribe(data => {
@@ -198,6 +215,7 @@ export class UsuariosComponent implements OnInit {
             email: usuario.email,
             senha: '',
             ativo: usuario.ativo,
+            clienteId: usuario.clienteId ?? null,
             acessos: this.mesclarAcessos(usuario.acessos)
         };
         this.editingId = usuario.id;
@@ -219,6 +237,7 @@ export class UsuariosComponent implements OnInit {
             nome: this.form.nome,
             email: this.form.email,
             ativo: this.form.ativo,
+            clienteId: this.form.clienteId ?? undefined,
             acessos: this.form.acessos,
             ...(this.form.senha?.trim() ? { senha: this.form.senha } : {})
         };
@@ -273,6 +292,7 @@ export class UsuariosComponent implements OnInit {
             email: '',
             senha: '',
             ativo: true,
+            clienteId: null,
             acessos: MODULOS.map(m => ({ modulo: m.key, visualizar: false, inserir: false, editar: false, remover: false }))
         };
     }

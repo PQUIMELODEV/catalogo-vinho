@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, model, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, model, output } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
@@ -92,6 +92,8 @@ import { BottleArtComponent } from './bottle-art.component';
               class="w-full btn-wa"
               label="Finalizar pelo WhatsApp"
               icon="pi pi-whatsapp"
+              [loading]="loading()"
+              [disabled]="loading()"
               (click)="checkout.emit()"
             ></button>
           </div>
@@ -103,6 +105,7 @@ import { BottleArtComponent } from './bottle-art.component';
 export class CartDrawerComponent {
   readonly cart = inject(CartService);
   readonly visible = model(false);
+  readonly loading = input(false);
   readonly checkout = output<void>();
   readonly Math = Math;
 

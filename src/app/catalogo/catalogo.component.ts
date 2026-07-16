@@ -21,6 +21,8 @@ import { BottleArtComponent } from './components/bottle-art.component';
 import { AuthService } from '../pages/auth/services/auth.service';
 import { LayoutService } from '../layout/service/layout.service';
 import { FontSizeService } from '../shared/services/font-size.service';
+import { PedidoService } from '../shared/services/pedido.service';
+import { CheckoutItem } from '../shared/models/pedido.model';
 
 type SortKey = 'rel' | 'price-asc' | 'price-desc' | 'name';
 
@@ -43,10 +45,13 @@ const WHATSAPP_NUMBER = '12812369747';
 export class CatalogoComponent implements OnInit {
   private readonly wineService = inject(WineService);
   private readonly messages = inject(MessageService);
+  private readonly pedidoService = inject(PedidoService);
   readonly authService = inject(AuthService);
   readonly layoutService = inject(LayoutService);
   readonly cart = inject(CartService);
   readonly fontSize = inject(FontSizeService);
+
+  readonly checkingOut = signal(false);
 
   readonly wines = signal<Wine[]>([]);
   readonly search = signal('');
@@ -139,30 +144,57 @@ export class CatalogoComponent implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  /** Monta a mensagem do pedido e abre o WhatsApp do vendedor (link wa.me). */
+  /**
+   * Grava o pedido no servidor (usando o cliente vinculado ao usuário logado) e, só
+   * depois de confirmado, monta a mensagem e abre o WhatsApp do vendedor (link wa.me).
+   */
   checkout(): void {
     const lines = this.cart.lines();
-    if (lines.length === 0) return;
+    if (lines.length === 0 || this.checkingOut()) return;
 
-    const fmt = (n: number) => 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 0 });
-    const body = lines
-      .map((l) => {
-        const label = l.kind === 'box' ? `caixa (${l.wine.boxQty} un)` : 'avulso';
-        return `• ${l.qty}x ${l.wine.name} ${l.wine.year} — ${label} — ${fmt(l.lineTotal)}`;
-      })
-      .join('\n');
+    const itens: CheckoutItem[] = lines.map((l) => ({
+      vinhoId: l.id,
+      kind: l.kind,
+      quantidade: l.qty,
+    }));
 
-    const msg =
-      `*Novo pedido — Adega Serra Azul*\n\n${body}\n\n` +
-      `*Total: ${fmt(this.cart.subtotal())}*\n\n` +
-      `Gostaria de combinar o pagamento e a entrega.`;
+    this.checkingOut.set(true);
+    this.pedidoService.checkout(itens).subscribe({
+      next: (pedido) => {
+        this.checkingOut.set(false);
 
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-    this.messages.add({
-      severity: 'info',
-      summary: 'Abrindo o WhatsApp…',
-      detail: 'Combine o pagamento com o vendedor',
-      life: 2600,
+        const fmt = (n: number) => 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        const body = pedido.itens
+          .map((i) => `• ${i.quantidade}x ${i.vinhoNome} — ${fmt(i.subtotal ?? i.quantidade * i.precoUnitario)}`)
+          .join('\n');
+
+        const msg =
+          `*Novo pedido #${pedido.id} — Adega Serra Azul*\n\n` +
+          `Cliente: ${pedido.clienteNome ?? ''}${pedido.clienteTelefone ? ' - ' + pedido.clienteTelefone : ''}\n\n` +
+          (pedido.enderecoResumo ? `Endereço de entrega:\n${pedido.enderecoResumo}\n\n` : '') +
+          `${body}\n\n` +
+          `*Total: ${fmt(pedido.valorTotal)}*\n\n` +
+          `Gostaria de combinar o pagamento e a entrega.`;
+
+        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+        this.cart.clear();
+        this.cartOpen.set(false);
+        this.messages.add({
+          severity: 'success',
+          summary: 'Pedido registrado!',
+          detail: 'Abrindo o WhatsApp para combinar pagamento e entrega…',
+          life: 3200,
+        });
+      },
+      error: (err: Error) => {
+        this.checkingOut.set(false);
+        this.messages.add({
+          severity: 'error',
+          summary: 'Não foi possível finalizar o pedido',
+          detail: err.message || 'Tente novamente ou fale com o vendedor.',
+          life: 5000,
+        });
+      },
     });
   }
 }

@@ -158,7 +158,7 @@
 </footer>
 
 <!-- ===== Carrinho + detalhe ===== -->
-<app-cart-drawer [(visible)]="cartOpen" (checkout)="checkout()" />
+<app-cart-drawer [(visible)]="cartOpen" [loading]="checkingOut()" (checkout)="checkout()" />
 
 <app-wine-detail-dialog
   [wine]="selectedWine()"

@@ -49,5 +49,11 @@ export const CONFIGURACAO_ROUTES: Routes = [
         loadComponent: () => import('./clientes/clientes.component').then(m => m.ClientesComponent),
         canActivate: [moduleGuard],
         data: { modulo: 'clientes' }
+    },
+    {
+        path: 'pedidos',
+        loadComponent: () => import('./pedidos/pedidos.component').then(m => m.PedidosComponent),
+        canActivate: [moduleGuard],
+        data: { modulo: 'pedidos' }
     }
 ];
