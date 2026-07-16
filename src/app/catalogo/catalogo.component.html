@@ -22,6 +22,30 @@
     </div>
 
     <div class="topbar__actions">
+      <div class="font-size-control" role="group" aria-label="Ajustar tamanho da fonte">
+        <p-button
+          type="button"
+          icon="pi pi-search-minus"
+          severity="secondary"
+          [outlined]="true"
+          [disabled]="!fontSize.podeDiminuir()"
+          (click)="fontSize.diminuir()"
+          ariaLabel="Diminuir fonte"
+          pTooltip="Diminuir fonte"
+        />
+        <span class="font-size-control__label">{{ fontSize.atual.label }}</span>
+        <p-button
+          type="button"
+          icon="pi pi-search-plus"
+          severity="secondary"
+          [outlined]="true"
+          [disabled]="!fontSize.podeAumentar()"
+          (click)="fontSize.aumentar()"
+          ariaLabel="Aumentar fonte"
+          pTooltip="Aumentar fonte"
+        />
+      </div>
+
       <p-button
         type="button"
         [icon]="layoutService.isDarkTheme() ? 'pi pi-sun' : 'pi pi-moon'"

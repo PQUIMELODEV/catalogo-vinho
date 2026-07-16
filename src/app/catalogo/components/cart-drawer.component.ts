@@ -72,8 +72,8 @@ import { BottleArtComponent } from './bottle-art.component';
         }
       </div>
 
-      @if (!cart.isEmpty()) {
-        <ng-template pTemplate="footer">
+      <ng-template pTemplate="footer">
+        @if (!cart.isEmpty()) {
           <div class="cart__foot">
             <div class="cart__summary">
               <span>{{ cart.bottleCount() }} garrafa{{ cart.bottleCount() !== 1 ? 's' : '' }}</span>
@@ -95,8 +95,8 @@ import { BottleArtComponent } from './bottle-art.component';
               (click)="checkout.emit()"
             ></button>
           </div>
-        </ng-template>
-      }
+        }
+      </ng-template>
     </p-drawer>
   `,
 })

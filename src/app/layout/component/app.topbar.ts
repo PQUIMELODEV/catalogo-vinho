@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
 import { LayoutService } from '@/app/layout/service/layout.service';
 import { AuthService } from '@/app/pages/auth/services/auth.service';
+import { FontSizeService } from '@/app/shared/services/font-size.service';
 
 @Component({
     selector: 'app-topbar',
@@ -23,6 +24,18 @@ import { AuthService } from '@/app/pages/auth/services/auth.service';
 
         <div class="layout-topbar-actions">
             <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1 px-1" role="group" aria-label="Ajustar tamanho da fonte">
+                    <button type="button" class="layout-topbar-action" [disabled]="!fontSize.podeDiminuir()" (click)="fontSize.diminuir()" title="Diminuir fonte">
+                        <i class="pi pi-search-minus"></i>
+                    </button>
+                    <span class="text-xs font-bold hidden md:inline" style="min-width: 44px; text-align: center; color: var(--p-text-muted-color)">{{ fontSize.atual.label }}</span>
+                    <button type="button" class="layout-topbar-action" [disabled]="!fontSize.podeAumentar()" (click)="fontSize.aumentar()" title="Aumentar fonte">
+                        <i class="pi pi-search-plus"></i>
+                    </button>
+                </div>
+
+                <div class="w-px h-6 mx-1" style="background: var(--p-surface-border)"></div>
+
                 <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()" title="Alternar tema">
                     <i [class]="layoutService.isDarkTheme() ? 'pi pi-sun' : 'pi pi-moon'"></i>
                 </button>
@@ -63,6 +76,7 @@ import { AuthService } from '@/app/pages/auth/services/auth.service';
 export class AppTopbar {
     layoutService = inject(LayoutService);
     authService = inject(AuthService);
+    fontSize = inject(FontSizeService);
 
     get userName(): string {
         return this.authService.currentUser()?.nome ?? 'Usuário';

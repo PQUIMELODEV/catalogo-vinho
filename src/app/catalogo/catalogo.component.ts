@@ -20,11 +20,12 @@ import { CartDrawerComponent } from './components/cart-drawer.component';
 import { BottleArtComponent } from './components/bottle-art.component';
 import { AuthService } from '../pages/auth/services/auth.service';
 import { LayoutService } from '../layout/service/layout.service';
+import { FontSizeService } from '../shared/services/font-size.service';
 
 type SortKey = 'rel' | 'price-asc' | 'price-desc' | 'name';
 
-/** Número americano do vendedor (somente dígitos, com DDI). */
-const WHATSAPP_NUMBER = '1XXXXXXXXXX';
+/** Número do vendedor para receber o pedido via WhatsApp (somente dígitos, com DDI). */
+const WHATSAPP_NUMBER = '12812369747';
 
 @Component({
   selector: 'app-catalogo',
@@ -45,6 +46,7 @@ export class CatalogoComponent implements OnInit {
   readonly authService = inject(AuthService);
   readonly layoutService = inject(LayoutService);
   readonly cart = inject(CartService);
+  readonly fontSize = inject(FontSizeService);
 
   readonly wines = signal<Wine[]>([]);
   readonly search = signal('');

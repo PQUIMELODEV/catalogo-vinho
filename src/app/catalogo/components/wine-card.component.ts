@@ -44,9 +44,14 @@ import { BottleArtComponent } from './bottle-art.component';
       border-bottom: 1px solid var(--p-content-border-color);
     }
     .wine-card__photo {
+      /* posicionado em vez de depender do stretch do grid (place-items: center
+         não estica os itens), senão fotos em retrato ficam com a altura
+         "auto" baseada na proporção natural da imagem e vazam do container */
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
     }
     .wine-card__nav {
       position: absolute;
@@ -69,7 +74,7 @@ import { BottleArtComponent } from './bottle-art.component';
     .wine-card__nav:hover { background: rgba(0, 0, 0, .7); }
     .wine-card__nav--prev { left: 8px; }
     .wine-card__nav--next { right: 8px; }
-    .wine-card__nav .pi { font-size: 11px; }
+    .wine-card__nav .pi { font-size: calc(11px * var(--app-font-scale, 1)); }
     .wine-card__dots {
       position: absolute;
       bottom: 10px;
@@ -103,7 +108,7 @@ import { BottleArtComponent } from './bottle-art.component';
       position: absolute;
       bottom: 10px;
       right: 10px;
-      font-size: 10px;
+      font-size: calc(10px * var(--app-font-scale, 1));
       font-weight: 700;
       letter-spacing: .07em;
       text-transform: uppercase;
@@ -123,7 +128,7 @@ import { BottleArtComponent } from './bottle-art.component';
       flex: 1;
     }
     .wine-card__name {
-      font-size: 15.5px;
+      font-size: calc(15.5px * var(--app-font-scale, 1));
       font-weight: 700;
       letter-spacing: -.15px;
       margin: 0 0 3px;
@@ -134,20 +139,20 @@ import { BottleArtComponent } from './bottle-art.component';
     .wine-card__name:hover { color: var(--p-primary-color); }
     .wine-card__producer {
       margin: 0;
-      font-size: 12.5px;
+      font-size: calc(12.5px * var(--app-font-scale, 1));
       color: var(--p-text-muted-color);
       font-weight: 500;
     }
     .wine-card__meta {
       margin: 0;
-      font-size: 12px;
+      font-size: calc(12px * var(--app-font-scale, 1));
       color: var(--p-text-muted-color);
       display: flex;
       align-items: center;
       gap: 5px;
       flex-wrap: wrap;
     }
-    .wine-card__meta .pi { font-size: 11px; }
+    .wine-card__meta .pi { font-size: calc(11px * var(--app-font-scale, 1)); }
     .dot { opacity: .4; }
 
     /* --- Preços --- */
@@ -169,7 +174,7 @@ import { BottleArtComponent } from './bottle-art.component';
     }
     .price__label {
       display: block;
-      font-size: 10px;
+      font-size: calc(10px * var(--app-font-scale, 1));
       font-weight: 700;
       letter-spacing: .05em;
       text-transform: uppercase;
@@ -179,13 +184,13 @@ import { BottleArtComponent } from './bottle-art.component';
     .price--box .price__label { color: var(--p-primary-color); }
     .price__val {
       display: block;
-      font-size: 15.5px;
+      font-size: calc(15.5px * var(--app-font-scale, 1));
       font-weight: 800;
       letter-spacing: -.3px;
       color: var(--p-text-color);
     }
     .price__val--strike {
-      font-size: 12px;
+      font-size: calc(12px * var(--app-font-scale, 1));
       font-weight: 600;
       text-decoration: line-through;
       opacity: .55;
@@ -195,7 +200,7 @@ import { BottleArtComponent } from './bottle-art.component';
     }
     .price__sub {
       display: block;
-      font-size: 10.5px;
+      font-size: calc(10.5px * var(--app-font-scale, 1));
       font-weight: 600;
       color: var(--p-primary-color);
       margin-top: 2px;
