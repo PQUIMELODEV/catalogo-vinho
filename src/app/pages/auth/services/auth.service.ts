@@ -5,6 +5,7 @@ import { Observable, tap, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthUser } from '../models/user.model';
 import { BaseResponse } from '../../../shared/models/base-response.model';
+import { environment } from '@/environments/environment';
 
 interface LoginResponse {
     token: string;
@@ -19,10 +20,7 @@ interface VerificarTelefoneResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private readonly STORAGE_KEY = 'auth_user';
-    /** Mesmo host que serviu o front — ver comentário em ApiService. */
-    private readonly API = window.location.hostname === 'localhost'
-        ? `https://${window.location.hostname}:44396/api`
-        : `http://${window.location.hostname}:54001/api`;
+    private readonly API = environment.apiUrl;
 
     currentUser = signal<AuthUser | null>(this.loadFromStorage());
 
