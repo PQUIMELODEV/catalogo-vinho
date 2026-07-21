@@ -20,6 +20,7 @@ import { BottleArtComponent } from './bottle-art.component';
       [modal]="true"
       [draggable]="false"
       [dismissableMask]="true"
+      [showHeader]="false"
       [style]="{ width: '880px', maxWidth: '94vw' }"
       [breakpoints]="{ '760px': '100vw' }"
       styleClass="wine-dialog"
@@ -28,6 +29,9 @@ import { BottleArtComponent } from './bottle-art.component';
       @if (wine(); as w) {
         <div class="dialog__grid">
           <div class="dialog__media">
+            <button type="button" class="dialog__close" (click)="close.emit()" aria-label="Fechar">
+              <i class="pi pi-times"></i>
+            </button>
             <div class="dialog__tags">
               @if (isOut()) {
                 <p-tag severity="danger" value="Esgotado" />
@@ -128,7 +132,7 @@ import { BottleArtComponent } from './bottle-art.component';
                   [showButtons]="true"
                   buttonLayout="horizontal"
                   [min]="1"
-                  [max]="kind() === 'box' ? 99 : w.stock"
+                  [max]="maxQty()"
                   decrementButtonClass="p-button-secondary"
                   incrementButtonClass="p-button-secondary"
                   incrementButtonIcon="pi pi-plus"
@@ -192,6 +196,13 @@ export class WineDetailDialogComponent {
   }
 
   readonly isOut = computed(() => (this.wine()?.stock ?? 0) === 0);
+  /** Máximo respeitando o estoque (caixa fechada consome boxQty garrafas por unidade). */
+  readonly maxQty = computed(() => {
+    const w = this.wine();
+    if (!w) return 1;
+    if (this.kind() === 'box') return w.boxQty > 0 ? Math.max(1, Math.floor(w.stock / w.boxQty)) : 1;
+    return Math.max(1, w.stock);
+  });
   readonly totalPrice = computed(() => {
     const w = this.wine();
     if (!w) return 0;

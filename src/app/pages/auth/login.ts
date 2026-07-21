@@ -10,6 +10,8 @@ import { MessageModule } from 'primeng/message';
 import { AppFloatingConfigurator } from '../../layout/component/app.floatingconfigurator';
 import { AuthService } from './services/auth.service';
 
+type Step = 'telefone' | 'senha' | 'criar-senha' | 'email';
+
 @Component({
     selector: 'app-login',
     standalone: true,
@@ -27,10 +29,12 @@ import { AuthService } from './services/auth.service';
     template: `
         <app-floating-configurator />
 
-        <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-screen overflow-hidden">
-            <div class="flex flex-col items-center justify-center">
-                <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
-                    <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
+        <div class="relative bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen w-full overflow-y-auto py-8">
+            <div class="pointer-events-none absolute inset-0"
+                style="background: radial-gradient(60% 55% at 50% 32%, color-mix(in srgb, var(--primary-color) 26%, transparent) 0%, transparent 70%)"></div>
+            <div class="relative flex flex-col items-center justify-center w-full px-4">
+                <div class="w-full max-w-[420px] sm:max-w-[480px] md:max-w-[560px] lg:max-w-[640px] xl:max-w-[720px]" style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
+                    <div class="w-full bg-surface-0 dark:bg-surface-900 py-10 sm:py-16 lg:py-20 px-6 sm:px-14 lg:px-20" style="border-radius: 53px">
 
                         <div class="text-center mb-8">
                             <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-8 w-16 shrink-0 mx-auto">
@@ -51,44 +55,101 @@ import { AuthService } from './services/auth.service';
                                 </g>
                             </svg>
                             <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Catálogo de Vinhos</div>
-                            <span class="text-muted-color font-medium">Entre com sua conta para continuar</span>
+                            <span class="text-muted-color font-medium">{{ subtitulo() }}</span>
                         </div>
 
                         @if (errorMessage()) {
                             <p-message severity="error" [text]="errorMessage()" styleClass="mb-6 w-full" />
                         }
 
-                        <div>
-                            <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">E-mail</label>
-                            <input pInputText id="email1" type="text" placeholder="seu@email.com" class="w-full md:w-120 mb-8" [(ngModel)]="email" />
+                        @if (step() === 'telefone') {
+                            <div>
+                                <label for="telefone1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Telefone</label>
+                                <input pInputText id="telefone1" type="tel" placeholder="(00) 00000-0000" class="w-full mb-8"
+                                    [(ngModel)]="telefone" (keyup.enter)="onVerificarTelefone()" />
 
-                            <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Senha</label>
-                            <p-password
-                                id="password1"
-                                [(ngModel)]="password"
-                                placeholder="Sua senha"
-                                [toggleMask]="true"
-                                styleClass="mb-4"
-                                [fluid]="true"
-                                [feedback]="false"
-                                (keyup.enter)="onLogin()"
-                            />
+                                <p-button label="Continuar" styleClass="w-full" [loading]="loading()" (onClick)="onVerificarTelefone()" />
 
-                            <!-- <div class="flex items-center justify-between mt-2 mb-8 gap-8">
-                                <div class="flex items-center">
-                                    <p-checkbox [(ngModel)]="rememberMe" id="rememberme1" binary class="mr-2" />
-                                    <label for="rememberme1">Lembrar de mim</label>
+                                <div class="text-center mt-6">
+                                    <span class="font-medium no-underline cursor-pointer text-primary text-sm" (click)="irParaEmail()">Sou administrador, entrar com e-mail</span>
                                 </div>
-                                <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Esqueci minha senha</span>
-                            </div> -->
+                            </div>
+                        }
 
-                            <p-button
-                                label="Entrar"
-                                styleClass="w-full"
-                                [loading]="loading()"
-                                (onClick)="onLogin()"
-                            />
-                        </div>
+                        @if (step() === 'criar-senha') {
+                            <div>
+                                <p class="text-muted-color mb-6">Primeiro acesso — crie uma senha numérica de 4 dígitos para <strong>{{ telefone }}</strong>.</p>
+
+                                <label for="novaSenha1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Nova senha (4 números)</label>
+                                <input pInputText id="novaSenha1" type="password" inputmode="numeric" maxlength="4" placeholder="0000" class="w-full mb-4"
+                                    [ngModel]="novaSenha" (ngModelChange)="novaSenha = somenteDigitos($event, 4)" />
+
+                                <label for="confirmarSenha1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Confirmar senha</label>
+                                <input pInputText id="confirmarSenha1" type="password" inputmode="numeric" maxlength="4" placeholder="0000" class="w-full mb-4"
+                                    [ngModel]="confirmarSenha" (ngModelChange)="confirmarSenha = somenteDigitos($event, 4)" />
+
+                                <label for="desafio1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Só para confirmar que você não é um robô: quanto é {{ desafioA }} + {{ desafioB }}?</label>
+                                <input pInputText id="desafio1" type="number" inputmode="numeric" placeholder="Resposta" class="w-full mb-8"
+                                    [(ngModel)]="desafioResposta" (keyup.enter)="onCriarSenha()" />
+
+                                <p-button label="Criar senha e entrar" styleClass="w-full" [loading]="loading()" (onClick)="onCriarSenha()" />
+
+                                <div class="text-center mt-6">
+                                    <span class="font-medium no-underline cursor-pointer text-primary text-sm" (click)="voltarParaTelefone()">Voltar</span>
+                                </div>
+                            </div>
+                        }
+
+                        @if (step() === 'senha') {
+                            <div>
+                                <p class="text-muted-color mb-6">Telefone: <strong>{{ telefone }}</strong></p>
+
+                                <label for="senha1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Senha</label>
+                                <p-password id="senha1" [(ngModel)]="senha" placeholder="Sua senha" [toggleMask]="true" styleClass="mb-4" [fluid]="true" [feedback]="false"
+                                    (keyup.enter)="onLoginTelefone()" />
+
+                                <div class="flex items-center mt-2 mb-8">
+                                    <p-checkbox [(ngModel)]="lembrar" id="lembrar1" binary class="mr-2" />
+                                    <label for="lembrar1">Lembrar de mim neste dispositivo</label>
+                                </div>
+
+                                <p-button label="Entrar" styleClass="w-full" [loading]="loading()" (onClick)="onLoginTelefone()" />
+
+                                <div class="text-center mt-6">
+                                    <span class="font-medium no-underline cursor-pointer text-primary text-sm" (click)="voltarParaTelefone()">Trocar telefone</span>
+                                </div>
+                            </div>
+                        }
+
+                        @if (step() === 'email') {
+                            <div>
+                                <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">E-mail</label>
+                                <input pInputText id="email1" type="text" placeholder="seu@email.com" class="w-full mb-8" [(ngModel)]="email" />
+
+                                <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Senha</label>
+                                <p-password
+                                    id="password1"
+                                    [(ngModel)]="password"
+                                    placeholder="Sua senha"
+                                    [toggleMask]="true"
+                                    styleClass="mb-8"
+                                    [fluid]="true"
+                                    [feedback]="false"
+                                    (keyup.enter)="onLogin()"
+                                />
+
+                                <p-button
+                                    label="Entrar"
+                                    styleClass="w-full"
+                                    [loading]="loading()"
+                                    (onClick)="onLogin()"
+                                />
+
+                                <div class="text-center mt-6">
+                                    <span class="font-medium no-underline cursor-pointer text-primary text-sm" (click)="voltarParaTelefone()">Sou cliente, entrar com telefone</span>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -96,13 +157,117 @@ import { AuthService } from './services/auth.service';
     `
 })
 export class Login {
+    step = signal<Step>('telefone');
+
+    telefone = '';
+    senha = '';
+    novaSenha = '';
+    confirmarSenha = '';
+    lembrar = false;
+
+    desafioA = 0;
+    desafioB = 0;
+    desafioResposta: number | null = null;
+
     email = '';
     password = '';
-    rememberMe = false;
+
     loading = signal(false);
     errorMessage = signal('');
 
     constructor(private authService: AuthService) {}
+
+    subtitulo(): string {
+        switch (this.step()) {
+            case 'criar-senha': return 'Configure sua senha para continuar';
+            case 'senha': return 'Digite sua senha para entrar';
+            case 'email': return 'Acesso administrativo';
+            default: return 'Entre com seu telefone para continuar';
+        }
+    }
+
+    onVerificarTelefone(): void {
+        if (!this.telefone?.trim()) {
+            this.errorMessage.set('Informe seu telefone.');
+            return;
+        }
+
+        this.loading.set(true);
+        this.errorMessage.set('');
+
+        this.authService.verificarTelefone(this.telefone).subscribe({
+            next: (r) => {
+                this.loading.set(false);
+                if (!r.clienteEncontrado) {
+                    this.errorMessage.set('Telefone não encontrado. Fale com a loja para cadastrar seu número.');
+                    return;
+                }
+                if (r.precisaCriarSenha) this.gerarDesafio();
+                this.step.set(r.precisaCriarSenha ? 'criar-senha' : 'senha');
+            },
+            error: (err: Error) => {
+                this.loading.set(false);
+                this.errorMessage.set(err.message || 'Não foi possível verificar o telefone.');
+            }
+        });
+    }
+
+    onCriarSenha(): void {
+        if (!/^\d{4}$/.test(this.novaSenha ?? '')) {
+            this.errorMessage.set('A senha precisa ter exatamente 4 números.');
+            return;
+        }
+        if (this.novaSenha !== this.confirmarSenha) {
+            this.errorMessage.set('As senhas não coincidem.');
+            return;
+        }
+        if (this.desafioResposta === null || Number(this.desafioResposta) !== this.desafioA + this.desafioB) {
+            this.errorMessage.set('Resposta incorreta. Confira a soma e tente de novo.');
+            this.gerarDesafio();
+            return;
+        }
+
+        this.loading.set(true);
+        this.errorMessage.set('');
+
+        this.authService.criarSenhaTelefone(this.telefone, this.novaSenha, this.desafioA, this.desafioB, Number(this.desafioResposta)).subscribe({
+            next: () => this.loading.set(false),
+            error: (err: Error) => {
+                this.loading.set(false);
+                this.gerarDesafio();
+                this.errorMessage.set(err.message || 'Não foi possível criar a senha.');
+            }
+        });
+    }
+
+    /** Mantém só dígitos e limita o tamanho — usado nos campos de senha numérica (PIN). */
+    somenteDigitos(valor: string, maxLen: number): string {
+        return (valor ?? '').replace(/\D/g, '').slice(0, maxLen);
+    }
+
+    private gerarDesafio(): void {
+        this.desafioA = 1 + Math.floor(Math.random() * 20);
+        this.desafioB = 1 + Math.floor(Math.random() * 20);
+        this.desafioResposta = null;
+    }
+
+    onLoginTelefone(): void {
+        if (!this.senha) {
+            this.errorMessage.set('Informe sua senha.');
+            return;
+        }
+
+        this.loading.set(true);
+        this.errorMessage.set('');
+
+        this.authService.loginTelefone(this.telefone, this.senha, this.lembrar).subscribe({
+            next: () => this.loading.set(false),
+            error: (err: Error) => {
+                this.loading.set(false);
+                this.errorMessage.set(err.message || 'Telefone ou senha incorretos.');
+            }
+        });
+    }
 
     onLogin(): void {
         if (!this.email || !this.password) {
@@ -114,13 +279,24 @@ export class Login {
         this.errorMessage.set('');
 
         this.authService.login(this.email, this.password).subscribe({
-            next: () => {
-                this.loading.set(false);
-            },
+            next: () => this.loading.set(false),
             error: () => {
                 this.errorMessage.set('E-mail ou senha incorretos.');
                 this.loading.set(false);
             }
         });
+    }
+
+    irParaEmail(): void {
+        this.errorMessage.set('');
+        this.step.set('email');
+    }
+
+    voltarParaTelefone(): void {
+        this.errorMessage.set('');
+        this.senha = '';
+        this.novaSenha = '';
+        this.confirmarSenha = '';
+        this.step.set('telefone');
     }
 }

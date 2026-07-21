@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, input, model, output } from
 import { CurrencyPipe } from '@angular/common';
 import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
 import { CartService } from '../services/cart.service';
 import { BottleArtComponent } from './bottle-art.component';
 // import { Wine } from '../models/wine.model'; // usado apenas por upgradeToBox, desabilitado abaixo
@@ -10,7 +11,7 @@ import { BottleArtComponent } from './bottle-art.component';
   selector: 'app-cart-drawer',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe, DrawerModule, ButtonModule, BottleArtComponent],
+  imports: [CurrencyPipe, DrawerModule, ButtonModule, TooltipModule, BottleArtComponent],
   template: `
     <p-drawer [(visible)]="visible" position="right" styleClass="cart-sidebar" [style]="{ width: '420px' }">
       <ng-template pTemplate="header">
@@ -59,7 +60,9 @@ import { BottleArtComponent } from './bottle-art.component';
                       <i class="pi pi-minus"></i>
                     </button>
                     <span class="stepper__val">{{ line.qty }}</span>
-                    <button type="button" class="stepper__btn" (click)="cart.setQty(line.id, line.kind, line.qty + 1)">
+                    <button type="button" class="stepper__btn" [disabled]="cart.atingiuLimiteEstoque(line.id, line.kind)"
+                        [pTooltip]="cart.atingiuLimiteEstoque(line.id, line.kind) ? 'Estoque máximo atingido' : ''"
+                        (click)="cart.setQty(line.id, line.kind, line.qty + 1)">
                       <i class="pi pi-plus"></i>
                     </button>
                   </div>

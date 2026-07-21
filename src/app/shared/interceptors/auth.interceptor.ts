@@ -9,7 +9,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
     const authReq = token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
 
-    const isLoginRequest = req.url.includes('/auth/login');
+    const isLoginRequest = req.url.includes('/auth/login') || req.url.includes('/auth/telefone/');
 
     return next(authReq).pipe(
         catchError(err => {

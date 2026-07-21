@@ -1,8 +1,8 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, tap, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { AuthUser } from '../models/user.model';
 import { BaseResponse } from '../../../shared/models/base-response.model';
 
@@ -11,10 +11,18 @@ interface LoginResponse {
     usuario: Omit<AuthUser, 'token'>;
 }
 
+interface VerificarTelefoneResponse {
+    clienteEncontrado: boolean;
+    precisaCriarSenha: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private readonly STORAGE_KEY = 'auth_user';
-    private readonly API = 'https://localhost:44396/api';
+    /** Mesmo host que serviu o front — ver comentário em ApiService. */
+    private readonly API = window.location.hostname === 'localhost'
+        ? `https://${window.location.hostname}:44396/api`
+        : `http://${window.location.hostname}:54001/api`;
 
     currentUser = signal<AuthUser | null>(this.loadFromStorage());
 
@@ -33,6 +41,64 @@ export class AuthService {
                 this.router.navigate([this.rotaInicial()]);
             })
         );
+    }
+
+    /** Primeiro passo do login do cliente: diz se o telefone é conhecido e se precisa criar senha. */
+    verificarTelefone(telefone: string): Observable<VerificarTelefoneResponse> {
+        return this.http.post<BaseResponse<VerificarTelefoneResponse>>(`${this.API}/auth/telefone/verificar`, { telefone }).pipe(
+            map(r => {
+                if (!r.status || !r.resultado) throw new Error(r.mensagem || 'Não foi possível verificar o telefone.');
+                return r.resultado;
+            }),
+            catchError(err => this.repassarErro(err, 'Não foi possível verificar o telefone.'))
+        );
+    }
+
+    /** Primeiro acesso: define a senha do cliente e já efetua o login. */
+    criarSenhaTelefone(telefone: string, novaSenha: string, desafioA: number, desafioB: number, desafioResposta: number): Observable<AuthUser> {
+        return this.http.post<BaseResponse<LoginResponse>>(`${this.API}/auth/telefone/criar-senha`, { telefone, novaSenha, desafioA, desafioB, desafioResposta }).pipe(
+            map(r => {
+                if (!r.status || !r.resultado) throw new Error(r.mensagem || 'Não foi possível criar a senha.');
+                const user: AuthUser = { ...r.resultado.usuario, token: r.resultado.token };
+                return user;
+            }),
+            tap(user => {
+                this.currentUser.set(user);
+                this.saveToStorage(user);
+                this.router.navigate([this.rotaInicial()]);
+            }),
+            catchError(err => this.repassarErro(err, 'Não foi possível criar a senha.'))
+        );
+    }
+
+    /** Login do cliente a partir do 2º acesso: telefone + senha. */
+    loginTelefone(telefone: string, senha: string, lembrar: boolean): Observable<AuthUser> {
+        return this.http.post<BaseResponse<LoginResponse>>(`${this.API}/auth/telefone/login`, { telefone, senha, lembrar }).pipe(
+            map(r => {
+                if (!r.status || !r.resultado) throw new Error(r.mensagem || 'Telefone ou senha inválidos.');
+                const user: AuthUser = { ...r.resultado.usuario, token: r.resultado.token };
+                return user;
+            }),
+            tap(user => {
+                this.currentUser.set(user);
+                this.saveToStorage(user);
+                this.router.navigate([this.rotaInicial()]);
+            }),
+            catchError(err => this.repassarErro(err, 'Telefone ou senha inválidos.'))
+        );
+    }
+
+    /**
+     * Respostas de erro HTTP (401, 500 etc.) pulam o `map` acima e caem direto aqui como
+     * HttpErrorResponse — extrai a mensagem amigável do corpo (BaseResponse.mensagem) em vez
+     * de deixar vazar o texto genérico do Angular ("Http failure response for ... 401").
+     */
+    private repassarErro(err: unknown, mensagemPadrao: string): Observable<never> {
+        if (err instanceof HttpErrorResponse) {
+            const mensagem = err.error?.mensagem;
+            return throwError(() => new Error(mensagem || mensagemPadrao));
+        }
+        return throwError(() => err instanceof Error ? err : new Error(mensagemPadrao));
     }
 
     rotaInicial(): string {

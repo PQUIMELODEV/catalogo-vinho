@@ -118,7 +118,28 @@ export class CatalogoComponent implements OnInit {
   }
 
   addToCart(wine: Wine, kind: PurchaseKind = 'unit', qty = 1): void {
-    this.cart.add(wine, kind, qty);
+    const { adicionado, solicitado } = this.cart.add(wine, kind, qty);
+
+    if (adicionado === 0) {
+      this.messages.add({
+        severity: 'error',
+        summary: 'Sem estoque disponível',
+        detail: `${wine.name} não tem mais unidades disponíveis para adicionar.`,
+        life: 3600,
+      });
+      return;
+    }
+
+    if (adicionado < solicitado) {
+      this.messages.add({
+        severity: 'warn',
+        summary: 'Estoque limitado',
+        detail: `Só havia ${adicionado} ${kind === 'box' ? 'caixa(s)' : 'unidade(s)'} de ${wine.name} disponível — adicionamos o que tinha.`,
+        life: 4200,
+      });
+      return;
+    }
+
     this.messages.add({
       severity: 'success',
       summary: 'Adicionado ao carrinho',

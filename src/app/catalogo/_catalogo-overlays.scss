@@ -14,8 +14,24 @@
 // ---------- Dialog de detalhe ----------
 .wine-dialog {
   .p-dialog-content { padding: 0 !important; overflow: hidden; }
-  .p-dialog-header { position: absolute; top: 0; right: 0; z-index: 10; background: transparent !important; border: none !important; padding: 12px; }
-  .p-dialog-header .p-dialog-header-icon { background: rgba(0,0,0,.35) !important; color: #fff !important; border-radius: 50%; width: 2rem; height: 2rem; }
+  .dialog__close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 10;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,.5);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    font-size: calc(15px * var(--app-font-scale, 1));
+    transition: background .15s;
+    &:hover { background: rgba(0,0,0,.75); }
+  }
 
   .dialog__grid {
     display: grid;
