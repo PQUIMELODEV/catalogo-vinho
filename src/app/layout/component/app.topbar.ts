@@ -34,13 +34,13 @@ import { FontSizeService } from '@/app/shared/services/font-size.service';
                     </button>
                 </div>
 
-                <div class="w-px h-6 mx-1" style="background: var(--p-surface-border)"></div>
+                <div class="w-px h-6 mx-1" style="background: var(--p-content-border-color)"></div>
 
                 <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()" title="Alternar tema">
                     <i [class]="layoutService.isDarkTheme() ? 'pi pi-sun' : 'pi pi-moon'"></i>
                 </button>
 
-                <div class="w-px h-6 mx-1" style="background: var(--p-surface-border)"></div>
+                <div class="w-px h-6 mx-1" style="background: var(--p-content-border-color)"></div>
 
                 @if (authService.temMultiplosPerfis()) {
                     <button
@@ -53,7 +53,7 @@ import { FontSizeService } from '@/app/shared/services/font-size.service';
                     </button>
                 }
 
-                <div class="flex items-center gap-2 px-2 py-1 rounded-lg" style="background: var(--p-surface-hover)">
+                <div class="flex items-center gap-2 px-2 py-1 rounded-lg" style="background: var(--p-content-hover-background)">
                     <div class="flex items-center justify-center w-8 h-8 rounded-full" style="background: var(--p-primary-color)">
                         <i class="pi pi-user text-sm" style="color: var(--p-primary-contrast-color)"></i>
                     </div>

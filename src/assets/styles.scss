@@ -1,0 +1,28 @@
+@use "layout";
+@use "../app/catalogo/catalogo-overlays";
+@import "primeicons/primeicons.css";
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 14px;
+}
+
+body {
+    margin: 0;
+    font-family: var(--p-font-family);
+    color: var(--p-text-color);
+    background-color: var(--p-content-hover-background);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}

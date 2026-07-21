@@ -104,7 +104,7 @@ import { VinhoFotosDialogComponent } from './vinho-fotos-dialog.component';
                         <label for="descricao" class="block font-bold mb-2">Descrição (Ficha Técnica)</label>
                         <textarea pTextarea id="descricao" [(ngModel)]="form.descricao" rows="3" fluid></textarea>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="paisId" class="block font-bold mb-2">País *</label>
                             <p-select id="paisId" [(ngModel)]="form.paisId" [options]="paises()" optionLabel="nome" optionValue="id" placeholder="Selecione" fluid />
@@ -116,7 +116,7 @@ import { VinhoFotosDialogComponent } from './vinho-fotos-dialog.component';
                             @if (submitted && !form.tipoVinhoId) { <small class="text-red-500">Tipo é obrigatório.</small> }
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="preco" class="block font-bold mb-2">Preço *</label>
                             <p-inputnumber id="preco" [(ngModel)]="form.preco" mode="currency" currency="BRL" locale="pt-BR" fluid />
@@ -126,7 +126,7 @@ import { VinhoFotosDialogComponent } from './vinho-fotos-dialog.component';
                             <p-inputnumber id="precoPromocional" [(ngModel)]="form.precoPromocional" mode="currency" currency="BRL" locale="pt-BR" fluid />
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="quantidadePorCaixa" class="block font-bold mb-2">Unidades por Caixa</label>
                             <p-inputnumber id="quantidadePorCaixa" [(ngModel)]="form.quantidadePorCaixa" [useGrouping]="false" fluid />
@@ -136,7 +136,7 @@ import { VinhoFotosDialogComponent } from './vinho-fotos-dialog.component';
                             <p-inputnumber id="valorCaixa" [(ngModel)]="form.valorCaixa" mode="currency" currency="BRL" locale="pt-BR" fluid />
                         </div>
                     </div>
-                    <div class="grid grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                             <label for="safra" class="block font-bold mb-2">Safra *</label>
                             <p-inputnumber id="safra" [(ngModel)]="form.safra" [useGrouping]="false" fluid />

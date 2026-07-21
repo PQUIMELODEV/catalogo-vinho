@@ -96,7 +96,7 @@ interface ClienteForm {
         <p-dialog [(visible)]="dialogVisible" [style]="{ width: '760px' }" [header]="editingId ? 'Editar Cliente' : 'Novo Cliente'" [modal]="true">
             <ng-template #content>
                 <div class="flex flex-col gap-5">
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="nome" class="block font-bold mb-2">Nome *</label>
                             <input pInputText id="nome" [(ngModel)]="form.nome" required autofocus fluid />
@@ -107,7 +107,7 @@ interface ClienteForm {
                             <input pInputText id="email" type="email" [(ngModel)]="form.email" fluid />
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="telefone" class="block font-bold mb-2">Telefone</label>
                             <input pInputText id="telefone" [(ngModel)]="form.telefone" placeholder="(00) 00000-0000" fluid />
@@ -143,7 +143,7 @@ interface ClienteForm {
                                 </div>
                                 <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" size="small" (click)="removeEndereco(i)" />
                             </div>
-                            <div class="grid grid-cols-3 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-bold mb-2 text-sm">Rótulo</label>
                                     <input pInputText [(ngModel)]="endereco.rotulo" placeholder="Casa, Trabalho..." fluid />
@@ -164,8 +164,8 @@ interface ClienteForm {
                                     @if (submitted && !endereco.estado) { <small class="text-red-500">Obrigatório.</small> }
                                 </div>
                             </div>
-                            <div class="grid grid-cols-3 gap-4">
-                                <div class="col-span-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="sm:col-span-2">
                                     <label class="block font-bold mb-2 text-sm">Logradouro *</label>
                                     <input pInputText [(ngModel)]="endereco.logradouro" fluid />
                                     @if (submitted && !endereco.logradouro) { <small class="text-red-500">Obrigatório.</small> }
@@ -176,7 +176,7 @@ interface ClienteForm {
                                     @if (submitted && !endereco.numero) { <small class="text-red-500">Obrigatório.</small> }
                                 </div>
                             </div>
-                            <div class="grid grid-cols-3 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-bold mb-2 text-sm">Complemento</label>
                                     <input pInputText [(ngModel)]="endereco.complemento" fluid />

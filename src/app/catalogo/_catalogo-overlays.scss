@@ -305,8 +305,12 @@
 // Dialog ocupa a tela inteira no celular
 @media (max-width: 760px) {
   .p-dialog.wine-dialog {
-    margin: 0; max-height: 100vh; height: 100vh; border-radius: 0;
-    .p-dialog-content { height: 100%; }
+    // !important: vence o [style] inline (width: 880px / maxWidth: 94vw) do componente
+    width: 100vw !important; max-width: 100vw !important;
+    // dvh: 100vh no iOS inclui a área atrás da barra de endereço e corta o rodapé
+    margin: 0; max-height: 100dvh; height: 100dvh; border-radius: 0;
+    // overflow: hidden (regra base) impedia o scroll do conteúdo no fullscreen
+    .p-dialog-content { height: 100%; overflow-y: auto; }
   }
 }
 

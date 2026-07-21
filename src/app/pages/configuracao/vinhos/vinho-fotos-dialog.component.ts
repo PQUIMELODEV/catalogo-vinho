@@ -53,14 +53,14 @@ const MAX_FOTOS = 5;
         }
         .foto-item {
             position: relative;
-            border: 1px solid var(--p-surface-border);
+            border: 1px solid var(--p-content-border-color);
             border-radius: 8px;
             overflow: hidden;
             aspect-ratio: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--p-surface-ground);
+            background: var(--p-content-hover-background);
         }
         .foto-item img { width: 100%; height: 100%; object-fit: cover; }
         .foto-item__actions {

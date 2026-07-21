@@ -102,40 +102,9 @@ h1, h2, h3, h4 { margin: 0; }
 // ---------- Grade ----------
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); gap: 22px; }
 
-.wine-card {
-  background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--c-radius);
-  overflow: hidden; display: flex; flex-direction: column;
-  transition: transform .18s, box-shadow .18s, border-color .18s;
-  &:hover { transform: translateY(-4px); box-shadow: 0 12px 40px -8px rgba(0,0,0,.28); }
-  &.is-out { opacity: .82; }
-}
-.wine-card__media {
-  position: relative; border: none; width: 100%; height: 230px; cursor: pointer;
-  background: radial-gradient(120% 90% at 50% 10%, var(--c-card-2), var(--c-hover));
-  display: grid; place-items: center; padding: 0; border-bottom: 1px solid var(--c-border);
-}
-.wine-card.is-out .bottle-art { filter: grayscale(.7); opacity: .7; }
-.wine-card__tags { position: absolute; top: 12px; left: 12px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
-.wine-card__cat {
-  position: absolute; bottom: 12px; right: 12px; font-size: calc(11px * var(--app-font-scale, 1)); font-weight: 700; letter-spacing: .06em;
-  text-transform: uppercase; color: var(--c-muted); background: var(--c-card); border: 1px solid var(--c-border);
-  padding: 4px 9px; border-radius: 6px;
-}
-.wine-card__body { padding: 16px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
-.wine-card__name { font-size: calc(16.5px * var(--app-font-scale, 1)); font-weight: 700; letter-spacing: -.2px; cursor: pointer; &:hover { color: var(--c-primary); } }
-.wine-card__producer { margin: 2px 0 0; font-size: calc(13px * var(--app-font-scale, 1)); color: var(--c-muted); }
-.wine-card__meta {
-  margin: 0; font-size: calc(12.5px * var(--app-font-scale, 1)); color: var(--c-muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-  .pi { font-size: calc(11px * var(--app-font-scale, 1)); } .dot { opacity: .5; }
-}
-.wine-card__prices { display: flex; gap: 10px; margin-top: auto; }
-.price { flex: 1; border: 1px solid var(--c-border); border-radius: 8px; padding: 8px 10px; background: var(--c-card-2);
-  &--box { background: var(--primary-soft); border-color: transparent;
-    .price__label { color: var(--c-primary); font-weight: 600; } }
-}
-.price__label { display: block; font-size: calc(11px * var(--app-font-scale, 1)); color: var(--c-muted); margin-bottom: 2px; }
-.price__val { font-size: calc(16px * var(--app-font-scale, 1)); font-weight: 800; letter-spacing: -.3px; }
-.wine-card__actions { display: flex; gap: 8px; ::ng-deep .p-button { flex: 1; } }
+// NOTA: os estilos do card (.wine-card) ficam no próprio
+// wine-card.component.ts — estilos aqui não alcançam o componente filho
+// por causa do encapsulamento de view do Angular.
 
 // NOTA: os estilos do dialog (.wine-dialog) e do carrinho (.cart-sidebar)
 // ficam em _catalogo-overlays.scss (global), pois esses overlays são
@@ -166,6 +135,7 @@ h1, h2, h3, h4 { margin: 0; }
     > .topbar__actions { flex-shrink: 0; }
   }
   .topbar__search { order: 3; flex: 0 0 100%; max-width: 100%; min-width: 0; }
+  .topbar__actions { gap: 6px; }
   .font-size-control__label { display: none; }
   .font-size-control { gap: 2px; padding: 0 2px; margin-right: 2px; }
 
@@ -191,26 +161,11 @@ h1, h2, h3, h4 { margin: 0; }
   }
   ::ng-deep .sort-dropdown { flex: 1; }
 
-  // grade em 2 colunas, card compacto
+  // grade em 2 colunas (o card compacto é responsabilidade do wine-card.component)
   .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .wine-card__media { height: 160px; }
-  .wine-card__media .bottle-art { height: 130px; width: auto; }
-  .wine-card__body { padding: 10px 12px 12px; gap: 8px; }
-  .wine-card__name { font-size: calc(14px * var(--app-font-scale, 1)); }
-  .wine-card__producer { font-size: calc(11.5px * var(--app-font-scale, 1)); }
-  .wine-card__meta { font-size: calc(11px * var(--app-font-scale, 1)); }
-  .wine-card__prices { gap: 6px; }
-  .price { padding: 6px 8px; }
-  .price__val { font-size: calc(13px * var(--app-font-scale, 1)); }
-  .wine-card__cat { display: none; }
-  // toca no card abre o detalhe — esconde "Detalhes" e deixa só "Adicionar"
-  .wine-card__actions ::ng-deep .p-button-outlined { display: none; }
 
   .site-foot { flex-direction: column; align-items: flex-start; gap: 10px; padding: 24px 14px 40px; }
 }
 @media (max-width: 380px) {
   .grid { grid-template-columns: 1fr; }
-  .wine-card__media { height: 200px; }
-  .wine-card__media .bottle-art { height: 168px; }
-  .wine-card__actions ::ng-deep .p-button-outlined { display: inline-flex; }
 }
