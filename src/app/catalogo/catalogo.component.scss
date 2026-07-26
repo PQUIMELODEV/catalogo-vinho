@@ -161,11 +161,8 @@ h1, h2, h3, h4 { margin: 0; }
   }
   ::ng-deep .sort-dropdown { flex: 1; }
 
-  // grade em 2 colunas (o card compacto é responsabilidade do wine-card.component)
-  .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  // um card por tela no celular (o card compacto é responsabilidade do wine-card.component)
+  .grid { grid-template-columns: 1fr; gap: 14px; }
 
   .site-foot { flex-direction: column; align-items: flex-start; gap: 10px; padding: 24px 14px 40px; }
-}
-@media (max-width: 380px) {
-  .grid { grid-template-columns: 1fr; }
 }

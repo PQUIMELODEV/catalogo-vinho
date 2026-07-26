@@ -218,18 +218,12 @@ import { BottleArtComponent } from './bottle-art.component';
       .wine-card__nav { opacity: 1; }
     }
 
-    /* --- Mobile: card compacto p/ grade de 2 colunas --- */
+    /* --- Mobile: um card por tela (largura cheia) --- */
     @media (max-width: 640px) {
-      .wine-card__media { height: 160px; }
-      .wine-card__media ::ng-deep .bottle-art { height: 140px; width: auto; }
-      .wine-card__cat { display: none; }
-      .wine-card__body { padding: 10px 10px 12px; gap: 8px; }
-      .wine-card__name { font-size: calc(13.5px * var(--app-font-scale, 1)); }
-      .wine-card__prices { flex-direction: column; gap: 6px; }
-      .price { padding: 6px 8px; min-width: 0; }
-      .price__val { font-size: calc(14px * var(--app-font-scale, 1)); }
-      /* tocar no card abre o detalhe — esconde "Detalhes" e deixa só "Adicionar" */
-      .wine-card__actions .p-button-outlined { display: none; }
+      /* card largo comporta o layout completo: imagem alta, badge, preços lado a lado */
+      .wine-card__media { height: 220px; }
+      .wine-card__body { padding: 14px; gap: 10px; }
+      .wine-card__prices { flex-direction: row; gap: 8px; }
     }
   `],
   template: `

@@ -185,8 +185,10 @@ export class CatalogoComponent implements OnInit {
         this.checkingOut.set(false);
 
         const fmt = (n: number) => 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        // "gf" = garrafa avulsa · "cx" = caixa fechada — deixa claro pro vendedor a unidade de cada linha.
+        const unidadeLabel = (tipo?: string) => (tipo === 'caixa' ? 'cx' : 'gf');
         const body = pedido.itens
-          .map((i) => `• ${i.quantidade}x ${i.vinhoNome} — ${fmt(i.subtotal ?? i.quantidade * i.precoUnitario)}`)
+          .map((i) => `• ${i.quantidade} ${unidadeLabel(i.tipo)} ${i.vinhoNome} — ${fmt(i.subtotal ?? i.quantidade * i.precoUnitario)}`)
           .join('\n');
 
         const msg =
