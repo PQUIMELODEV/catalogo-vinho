@@ -55,7 +55,7 @@ import { Categoria } from '@/app/catalogo/models/wine.model';
                     <th style="width:3rem"><p-tableHeaderCheckbox /></th>
                     <th pSortableColumn="id" style="min-width:5rem">ID <p-sortIcon field="id" /></th>
                     <th pSortableColumn="nome" style="min-width:14rem">Nome <p-sortIcon field="nome" /></th>
-                    <th pSortableColumn="slug" style="min-width:14rem">Slug <p-sortIcon field="slug" /></th>
+                    <th pSortableColumn="slug" style="min-width:14rem">Identificador <p-sortIcon field="slug" /></th>
                     <th pSortableColumn="ativo" style="min-width:8rem">Status <p-sortIcon field="ativo" /></th>
                     <th style="min-width:10rem"></th>
                 </tr>
@@ -86,9 +86,9 @@ import { Categoria } from '@/app/catalogo/models/wine.model';
                         @if (submitted && !form.nome) { <small class="text-red-500">Nome é obrigatório.</small> }
                     </div>
                     <div>
-                        <label for="slug" class="block font-bold mb-2">Slug *</label>
+                        <label for="slug" class="block font-bold mb-2">Identificador *</label>
                         <input pInputText id="slug" [(ngModel)]="form.slug" required fluid />
-                        @if (submitted && !form.slug) { <small class="text-red-500">Slug é obrigatório.</small> }
+                        @if (submitted && !form.slug) { <small class="text-red-500">Identificador é obrigatório.</small> }
                     </div>
                     <div class="flex items-center gap-3">
                         <p-toggleswitch inputId="ativo" [(ngModel)]="form.ativo" />
