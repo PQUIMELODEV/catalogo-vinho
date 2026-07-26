@@ -362,8 +362,10 @@ export class PedidosComponent implements OnInit {
     /** Monta o resumo do pedido e abre o WhatsApp — sem número fixo, o admin escolhe o contato do entregador na hora de enviar. */
     enviarWhatsApp(pedido: Pedido) {
         const fmt = (n: number) => 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        // "gf" = garrafa avulsa · "cx" = caixa fechada (mesmo formato do catálogo).
+        const unidadeLabel = (tipo?: string) => (tipo === 'caixa' ? 'cx' : 'gf');
         const itensTexto = pedido.itens
-            .map(i => `• ${i.quantidade}x ${i.vinhoNome ?? i.vinhoId} — ${fmt(i.quantidade * i.precoUnitario)}`)
+            .map(i => `• ${i.quantidade} ${unidadeLabel(i.tipo)} ${i.vinhoNome ?? i.vinhoId} — ${fmt(i.quantidade * i.precoUnitario)}`)
             .join('\n');
 
         const msg =
