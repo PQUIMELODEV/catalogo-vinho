@@ -8,50 +8,50 @@ import { providePrimeNG } from 'primeng/config';
 import { appRoutes } from './app.routes';
 import { authInterceptor } from './app/shared/interceptors/auth.interceptor';
 
-// Preset "noir" (preto/branco) fixado para o projeto todo — mesma paleta
-// que ficava disponível no configurador de tema (removido).
+// Paleta da marca (inspirada no rótulo Concha y Toro): laranja = cor de ação
+// (botões/CTA), bordô e creme entram nos tokens do catálogo (catalogo.component.scss).
 const AppTheme = definePreset(Aura, {
     semantic: {
         primary: {
-            50: '{surface.50}',
-            100: '{surface.100}',
-            200: '{surface.200}',
-            300: '{surface.300}',
-            400: '{surface.400}',
-            500: '{surface.500}',
-            600: '{surface.600}',
-            700: '{surface.700}',
-            800: '{surface.800}',
-            900: '{surface.900}',
-            950: '{surface.950}'
+            50: '#fcefe8',
+            100: '#f8d7c6',
+            200: '#f2b499',
+            300: '#eb9068',
+            400: '#e4703f',
+            500: '#df5626',
+            600: '#c4461b',
+            700: '#9e3815',
+            800: '#7a2c12',
+            900: '#57200d',
+            950: '#321206'
         },
         colorScheme: {
             light: {
                 primary: {
-                    color: '{primary.950}',
+                    color: '{primary.500}',
                     contrastColor: '#ffffff',
-                    hoverColor: '{primary.800}',
+                    hoverColor: '{primary.600}',
                     activeColor: '{primary.700}'
                 },
                 highlight: {
-                    background: '{primary.950}',
-                    focusBackground: '{primary.700}',
+                    background: '{primary.500}',
+                    focusBackground: '{primary.600}',
                     color: '#ffffff',
                     focusColor: '#ffffff'
                 }
             },
             dark: {
                 primary: {
-                    color: '{primary.50}',
-                    contrastColor: '{primary.950}',
-                    hoverColor: '{primary.200}',
-                    activeColor: '{primary.300}'
+                    color: '{primary.400}',
+                    contrastColor: '#2a1206',
+                    hoverColor: '{primary.300}',
+                    activeColor: '{primary.200}'
                 },
                 highlight: {
-                    background: '{primary.50}',
-                    focusBackground: '{primary.300}',
-                    color: '{primary.950}',
-                    focusColor: '{primary.950}'
+                    background: 'color-mix(in srgb, {primary.400}, transparent 76%)',
+                    focusBackground: 'color-mix(in srgb, {primary.400}, transparent 64%)',
+                    color: 'rgba(255,255,255,.92)',
+                    focusColor: 'rgba(255,255,255,.92)'
                 }
             }
         }

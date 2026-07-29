@@ -6,23 +6,33 @@
 // ============================================================
 
 :host {
-  // tokens do tema (com fallback)
-  --c-ground: var(--p-content-hover-background, #eef1f6);
+  // ---- Paleta da marca (rótulo Concha y Toro): bordô + laranja + creme ----
+  // Superfícies quentes escopadas ao catálogo: sobrescreve os tokens do tema
+  // só aqui (os cards, filho deste host, herdam estes valores) sem tocar no admin.
+  --p-content-background: #ffffff;
+  --p-content-hover-background: #efeadf;
+  --p-content-border-color: #e4dbcb;
+  --p-surface-100: #f5f0e6;
+  --p-text-color: #2a2620;
+  --p-text-muted-color: #7c7264;
+
+  // tokens usados pelos estilos do catálogo (herdam dos de cima)
+  --c-ground: var(--p-content-hover-background, #efeadf);
   --c-card: var(--p-content-background, #ffffff);
-  --c-card-2: var(--p-surface-100, #f1f5f9);
-  --c-border: var(--p-content-border-color, #e3e8ef);
-  --c-text: var(--p-text-color, #1f2733);
-  --c-muted: var(--p-text-muted-color, #64748b);
-  --c-hover: var(--p-content-hover-background, #f1f5f9);
-  --c-primary: var(--p-primary-color, #10b981);
+  --c-card-2: var(--p-surface-100, #f5f0e6);
+  --c-border: var(--p-content-border-color, #e4dbcb);
+  --c-text: var(--p-text-color, #2a2620);
+  --c-muted: var(--p-text-muted-color, #7c7264);
+  --c-hover: var(--p-content-hover-background, #f5f0e6);
+  --c-primary: var(--p-primary-color, #df5626);        // laranja = ação
   --c-primary-text: var(--p-primary-contrast-color, #ffffff);
   --c-radius: var(--p-content-border-radius, 12px);
 
-  // acentos da marca (vinho) — independentes do tema
-  --wine: #7c2d3a;
+  // acento vinho (bordô) — marca, hero e preço de caixa
+  --wine: #6e243a;
   --wine-soft: color-mix(in srgb, var(--wine) 12%, transparent);
   --primary-soft: color-mix(in srgb, var(--c-primary) 14%, transparent);
-  --hero-grad: linear-gradient(120deg, #1b2230 0%, #2a1620 100%);
+  --hero-grad: linear-gradient(120deg, #7a2942 0%, #4f1626 100%);
   --wa: #25d366;
 
   display: block;
@@ -32,8 +42,17 @@
 }
 
 :host-context(.app-dark) {
-  --wine: #d98a98;
-  --wine-soft: color-mix(in srgb, #be5062 16%, transparent);
+  // superfícies quentes escuras (creme vira grafite quente)
+  --p-content-background: #1e1b16;
+  --p-content-hover-background: #16130f;
+  --p-content-border-color: #332d25;
+  --p-surface-100: #262019;
+  --p-text-color: #ede7db;
+  --p-text-muted-color: #a99e8c;
+
+  --wine: #e2909e;
+  --wine-soft: color-mix(in srgb, #b5556a 22%, transparent);
+  --hero-grad: linear-gradient(120deg, #4f1626 0%, #2a0e17 100%);
 }
 
 h1, h2, h3, h4 { margin: 0; }
@@ -50,7 +69,7 @@ h1, h2, h3, h4 { margin: 0; }
 }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--c-text); flex-shrink: 0; }
 .brand__mark {
-  width: 38px; height: 38px; border-radius: 10px; background: #7c2d3a; color: #fff;
+  width: 38px; height: 38px; border-radius: 10px; background: var(--wine); color: #fff;
   display: grid; place-items: center; font-size: calc(18px * var(--app-font-scale, 1));
 }
 .brand__text { font-size: calc(17px * var(--app-font-scale, 1)); letter-spacing: -.2px; }
@@ -81,7 +100,7 @@ h1, h2, h3, h4 { margin: 0; }
 }
 .hero__eyebrow {
   display: inline-block; font-size: calc(12px * var(--app-font-scale, 1)); font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--c-primary); background: color-mix(in srgb, var(--c-primary) 16%, transparent);
+  color: #f6ecd9; background: rgba(255, 255, 255, .14);
   padding: 6px 12px; border-radius: 100px; margin-bottom: 18px;
 }
 .hero__text h1 { font-size: calc(40px * var(--app-font-scale, 1)); line-height: 1.08; font-weight: 800; letter-spacing: -1px; text-wrap: balance; }

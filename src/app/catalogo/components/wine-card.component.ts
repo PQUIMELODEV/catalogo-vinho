@@ -169,8 +169,8 @@ import { BottleArtComponent } from './bottle-art.component';
       background: var(--p-content-hover-background);
     }
     .price--box {
-      background: color-mix(in srgb, var(--p-primary-color) 10%, transparent);
-      border-color: color-mix(in srgb, var(--p-primary-color) 30%, transparent);
+      background: color-mix(in srgb, var(--wine, #6e243a) 10%, transparent);
+      border-color: color-mix(in srgb, var(--wine, #6e243a) 30%, transparent);
     }
     .price__label {
       display: block;
@@ -181,7 +181,7 @@ import { BottleArtComponent } from './bottle-art.component';
       color: var(--p-text-muted-color);
       margin-bottom: 3px;
     }
-    .price--box .price__label { color: var(--p-primary-color); }
+    .price--box .price__label { color: var(--wine, #6e243a); }
     .price__val {
       display: block;
       font-size: calc(15.5px * var(--app-font-scale, 1));
@@ -196,13 +196,13 @@ import { BottleArtComponent } from './bottle-art.component';
       opacity: .55;
     }
     .price__val--promo {
-      color: var(--p-red-500, #ef4444);
+      color: var(--p-primary-color, #df5626);
     }
     .price__sub {
       display: block;
       font-size: calc(10.5px * var(--app-font-scale, 1));
       font-weight: 600;
-      color: var(--p-primary-color);
+      color: var(--wine, #6e243a);
       margin-top: 2px;
     }
 
