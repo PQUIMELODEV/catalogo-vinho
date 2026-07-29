@@ -19,7 +19,7 @@ interface LayoutState {
 })
 export class LayoutService {
     layoutConfig = signal<LayoutConfig>({
-        darkTheme: true,
+        darkTheme: false,
         menuMode: 'static'
     });
 
