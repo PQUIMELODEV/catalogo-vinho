@@ -22,51 +22,64 @@
     </div>
 
     <div class="topbar__actions">
-      <div class="font-size-control" role="group" aria-label="Ajustar tamanho da fonte">
+      <!-- No mobile estes botões ficam dentro do menu sanduíche; só o carrinho fica de fora -->
+      <div class="topbar__collapse" [class.is-open]="menuOpen()">
+        <div class="font-size-control" role="group" aria-label="Ajustar tamanho da fonte">
+          <p-button
+            type="button"
+            icon="pi pi-search-minus"
+            severity="secondary"
+            [outlined]="true"
+            [disabled]="!fontSize.podeDiminuir()"
+            (click)="fontSize.diminuir()"
+            ariaLabel="Diminuir fonte"
+            pTooltip="Diminuir fonte"
+          />
+          <span class="font-size-control__label">{{ fontSize.atual.label }}</span>
+          <p-button
+            type="button"
+            icon="pi pi-search-plus"
+            severity="secondary"
+            [outlined]="true"
+            [disabled]="!fontSize.podeAumentar()"
+            (click)="fontSize.aumentar()"
+            ariaLabel="Aumentar fonte"
+            pTooltip="Aumentar fonte"
+          />
+        </div>
+
         <p-button
           type="button"
-          icon="pi pi-search-minus"
+          [icon]="layoutService.isDarkTheme() ? 'pi pi-sun' : 'pi pi-moon'"
           severity="secondary"
           [outlined]="true"
-          [disabled]="!fontSize.podeDiminuir()"
-          (click)="fontSize.diminuir()"
-          ariaLabel="Diminuir fonte"
-          pTooltip="Diminuir fonte"
+          (click)="toggleDarkMode()"
+          ariaLabel="Alternar tema"
+          pTooltip="Alternar tema"
         />
-        <span class="font-size-control__label">{{ fontSize.atual.label }}</span>
+
+        @if (authService.temMultiplosPerfis()) {
+          <p-button
+            type="button"
+            icon="pi pi-cog"
+            severity="secondary"
+            [outlined]="true"
+            routerLink="/"
+            ariaLabel="Área administrativa"
+            pTooltip="Área administrativa"
+          />
+        }
+
         <p-button
           type="button"
-          icon="pi pi-search-plus"
+          icon="pi pi-sign-out"
           severity="secondary"
           [outlined]="true"
-          [disabled]="!fontSize.podeAumentar()"
-          (click)="fontSize.aumentar()"
-          ariaLabel="Aumentar fonte"
-          pTooltip="Aumentar fonte"
+          (click)="logout()"
+          ariaLabel="Sair"
+          pTooltip="Sair"
         />
       </div>
-
-      <p-button
-        type="button"
-        [icon]="layoutService.isDarkTheme() ? 'pi pi-sun' : 'pi pi-moon'"
-        severity="secondary"
-        [outlined]="true"
-        (click)="toggleDarkMode()"
-        ariaLabel="Alternar tema"
-        pTooltip="Alternar tema"
-      />
-
-      @if (authService.temMultiplosPerfis()) {
-        <p-button
-          type="button"
-          icon="pi pi-cog"
-          severity="secondary"
-          [outlined]="true"
-          routerLink="/"
-          ariaLabel="Área administrativa"
-          pTooltip="Área administrativa"
-        />
-      }
 
       <p-button
         type="button"
@@ -75,22 +88,26 @@
         [outlined]="true"
         [badge]="cart.count() > 0 ? (cart.count() + '') : undefined"
         badgeSeverity="danger"
-        (click)="cartOpen.set(true)"
+        (click)="cartOpen.set(true); menuOpen.set(false)"
         ariaLabel="Carrinho"
       />
 
       <p-button
+        styleClass="topbar__hamburger"
         type="button"
-        icon="pi pi-sign-out"
+        [icon]="menuOpen() ? 'pi pi-times' : 'pi pi-bars'"
         severity="secondary"
         [outlined]="true"
-        (click)="logout()"
-        ariaLabel="Sair"
-        pTooltip="Sair"
+        (click)="menuOpen.set(!menuOpen())"
+        ariaLabel="Menu"
       />
     </div>
   </div>
 </header>
+
+@if (menuOpen()) {
+  <div class="topbar__backdrop" (click)="menuOpen.set(false)"></div>
+}
 
 <!-- ===== Hero ===== -->
 <section class="hero">

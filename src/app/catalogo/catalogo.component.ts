@@ -60,6 +60,8 @@ export class CatalogoComponent implements OnInit {
 
   readonly cartOpen = signal(false);
   readonly selectedWine = signal<Wine | null>(null);
+  /** menu sanduíche da topbar no mobile (fonte, tema, admin, sair) */
+  readonly menuOpen = signal(false);
 
   /** opções de filtro de categoria (p-selectButton) */
   readonly categoryOptions = signal<{ label: string; value: WineCategory | 'Todos' }[]>([]);

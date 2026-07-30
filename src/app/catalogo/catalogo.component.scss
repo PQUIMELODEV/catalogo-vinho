@@ -77,6 +77,10 @@ h1, h2, h3, h4 { margin: 0; }
 
 .topbar__search { flex: 1; max-width: 560px; }
 .topbar__actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+// No desktop os botões ficam inline e o hambúrguer/backdrop somem.
+.topbar__collapse { display: flex; align-items: center; gap: 10px; }
+:host ::ng-deep .topbar__hamburger { display: none; }
+.topbar__backdrop { display: none; }
 .font-size-control {
   display: flex; align-items: center; gap: 6px;
   padding: 0 4px; border-right: 1px solid var(--c-border); margin-right: 4px;
@@ -155,8 +159,29 @@ h1, h2, h3, h4 { margin: 0; }
   }
   .topbar__search { order: 3; flex: 0 0 100%; max-width: 100%; min-width: 0; }
   .topbar__actions { gap: 6px; }
-  .font-size-control__label { display: none; }
-  .font-size-control { gap: 2px; padding: 0 2px; margin-right: 2px; }
+
+  // menu sanduíche: hambúrguer aparece e os botões viram um dropdown; só o carrinho fica fora
+  :host ::ng-deep .topbar__hamburger { display: inline-flex; }
+  .topbar__collapse {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 12px;
+    z-index: 30;
+    flex-flow: row wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    max-width: calc(100vw - 24px);
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, .2);
+  }
+  .topbar__collapse.is-open { display: flex; }
+  .topbar__collapse .font-size-control { border-right: none; margin-right: 0; padding: 0; }
+  .topbar__backdrop { display: block; position: fixed; inset: 0; z-index: 19; }
 
   .hero { width: 100%; }
   .hero__inner { padding: 28px 16px 36px; }
