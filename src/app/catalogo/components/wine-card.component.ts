@@ -36,6 +36,7 @@ import { BottleArtComponent } from './bottle-art.component';
       width: 100%;
       height: 220px;
       cursor: pointer;
+      overflow: hidden;
       background: radial-gradient(ellipse at 50% 20%, var(--p-surface-100, #f1f5f9), var(--p-content-hover-background, #eef1f6));
       display: grid;
       place-items: center;
@@ -43,6 +44,8 @@ import { BottleArtComponent } from './bottle-art.component';
       border: none;
       border-bottom: 1px solid var(--p-content-border-color);
     }
+    /* a garrafa ilustrada tem altura fixa (215px); limita p/ caber na mídia */
+    .wine-card__media ::ng-deep .bottle-art { max-height: 100%; width: auto; }
     .wine-card__photo {
       /* posicionado em vez de depender do stretch do grid (place-items: center
          não estica os itens), senão fotos em retrato ficam com a altura
@@ -231,6 +234,8 @@ import { BottleArtComponent } from './bottle-art.component';
     /* --- Mobile: 2 colunas (cards estreitos) — layout compacto --- */
     @media (max-width: 640px) {
       .wine-card__media { height: 150px; }
+      /* garrafa menor p/ caber na mídia compacta sem ser cortada */
+      .wine-card__media ::ng-deep .bottle-art { height: 120px; width: auto; }
       .wine-card__cat { display: none; }
       .wine-card__body { padding: 10px 11px 12px; gap: 8px; }
       .wine-card__name { font-size: calc(13.5px * var(--app-font-scale, 1)); }
