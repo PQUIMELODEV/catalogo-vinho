@@ -160,18 +160,28 @@ import { BottleArtComponent } from './bottle-art.component';
       display: flex;
       gap: 8px;
       margin-top: auto;
+      align-items: stretch;
     }
+    /* Avulso — discreto: a caixa é o que queremos vender */
     .price {
       flex: 1;
       border: 1px solid var(--p-content-border-color);
       border-radius: 8px;
-      padding: 8px 10px;
-      background: var(--p-content-hover-background);
+      padding: 7px 10px;
+      background: transparent;
     }
+    .price:not(.price--box) .price__val:not(.price__val--promo) {
+      color: var(--p-text-muted-color);
+      font-size: calc(13.5px * var(--app-font-scale, 1));
+      font-weight: 700;
+    }
+    /* Caixa fechada — destaque forte (acento vermelho da marca) */
     .price--box {
-      background: color-mix(in srgb, var(--wine, #6e243a) 10%, transparent);
-      border-color: color-mix(in srgb, var(--wine, #6e243a) 30%, transparent);
+      flex: 1.4;
+      background: color-mix(in srgb, var(--p-primary-color) 12%, transparent);
+      border: 1.5px solid var(--p-primary-color);
     }
+    .price--box .price__val { font-size: calc(18px * var(--app-font-scale, 1)); }
     .price__label {
       display: block;
       font-size: calc(10px * var(--app-font-scale, 1));
@@ -181,10 +191,10 @@ import { BottleArtComponent } from './bottle-art.component';
       color: var(--p-text-muted-color);
       margin-bottom: 3px;
     }
-    .price--box .price__label { color: var(--wine, #6e243a); }
+    .price--box .price__label { color: var(--p-primary-color); font-weight: 800; }
     .price__val {
       display: block;
-      font-size: calc(15.5px * var(--app-font-scale, 1));
+      font-size: calc(14px * var(--app-font-scale, 1));
       font-weight: 800;
       letter-spacing: -.3px;
       color: var(--p-text-color);
@@ -196,13 +206,13 @@ import { BottleArtComponent } from './bottle-art.component';
       opacity: .55;
     }
     .price__val--promo {
-      color: var(--p-primary-color, #df5626);
+      color: var(--p-primary-color, #c0272d);
     }
     .price__sub {
       display: block;
       font-size: calc(10.5px * var(--app-font-scale, 1));
-      font-weight: 600;
-      color: var(--wine, #6e243a);
+      font-weight: 700;
+      color: var(--p-primary-color, #c0272d);
       margin-top: 2px;
     }
 

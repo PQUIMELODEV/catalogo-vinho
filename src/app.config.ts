@@ -13,17 +13,17 @@ import { authInterceptor } from './app/shared/interceptors/auth.interceptor';
 const AppTheme = definePreset(Aura, {
     semantic: {
         primary: {
-            50: '#fcefe8',
-            100: '#f8d7c6',
-            200: '#f2b499',
-            300: '#eb9068',
-            400: '#e4703f',
-            500: '#df5626',
-            600: '#c4461b',
-            700: '#9e3815',
-            800: '#7a2c12',
-            900: '#57200d',
-            950: '#321206'
+            50: '#fbeaea',
+            100: '#f5c9cb',
+            200: '#ec9a9d',
+            300: '#e06b70',
+            400: '#d5474d',
+            500: '#c0272d',
+            600: '#a61f26',
+            700: '#86181e',
+            800: '#661318',
+            900: '#470d10',
+            950: '#2b0709'
         },
         colorScheme: {
             light: {
