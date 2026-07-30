@@ -228,12 +228,18 @@ import { BottleArtComponent } from './bottle-art.component';
       .wine-card__nav { opacity: 1; }
     }
 
-    /* --- Mobile: um card por tela (largura cheia) --- */
+    /* --- Mobile: 2 colunas (cards estreitos) — layout compacto --- */
     @media (max-width: 640px) {
-      /* card largo comporta o layout completo: imagem alta, badge, preços lado a lado */
-      .wine-card__media { height: 220px; }
-      .wine-card__body { padding: 14px; gap: 10px; }
-      .wine-card__prices { flex-direction: row; gap: 8px; }
+      .wine-card__media { height: 150px; }
+      .wine-card__cat { display: none; }
+      .wine-card__body { padding: 10px 11px 12px; gap: 8px; }
+      .wine-card__name { font-size: calc(13.5px * var(--app-font-scale, 1)); }
+      /* preços empilhados: não cabem lado a lado num card estreito */
+      .wine-card__prices { flex-direction: column; gap: 6px; }
+      .price, .price--box { flex: none; }
+      .price--box .price__val { font-size: calc(16px * var(--app-font-scale, 1)); }
+      /* tocar no card já abre o detalhe — deixa só o "Adicionar" */
+      .wine-card__actions ::ng-deep .p-button-outlined { display: none; }
     }
   `],
   template: `
