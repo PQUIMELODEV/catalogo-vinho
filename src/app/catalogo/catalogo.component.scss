@@ -28,11 +28,11 @@
   --c-primary-text: var(--p-primary-contrast-color, #ffffff);
   --c-radius: var(--p-content-border-radius, 12px);
 
-  // acento vinho (bordô) — marca, hero e preço de caixa
-  --wine: #6e243a;
+  // acento da marca — agora no vermelho do tema (não mais bordô)
+  --wine: #c0272d;
   --wine-soft: color-mix(in srgb, var(--wine) 12%, transparent);
   --primary-soft: color-mix(in srgb, var(--c-primary) 14%, transparent);
-  --hero-grad: linear-gradient(120deg, #7a2942 0%, #4f1626 100%);
+  --hero-grad: linear-gradient(120deg, #c0272d 0%, #8b1a20 100%);
   --wa: #25d366;
 
   display: block;
@@ -50,9 +50,9 @@
   --p-text-color: #ede7db;
   --p-text-muted-color: #a99e8c;
 
-  --wine: #e2909e;
-  --wine-soft: color-mix(in srgb, #b5556a 22%, transparent);
-  --hero-grad: linear-gradient(120deg, #4f1626 0%, #2a0e17 100%);
+  --wine: #d5474d;
+  --wine-soft: color-mix(in srgb, #c0272d 22%, transparent);
+  --hero-grad: linear-gradient(120deg, #86181e 0%, #4a0e11 100%);
 }
 
 h1, h2, h3, h4 { margin: 0; }
