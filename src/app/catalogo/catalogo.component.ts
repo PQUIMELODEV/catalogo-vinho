@@ -11,7 +11,7 @@ import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { MessageService } from 'primeng/api';
 
-import { PurchaseKind, Wine, WineCategory } from './models/wine.model';
+import { PurchaseKind, Wine } from './models/wine.model';
 import { WineService } from './services/wine.service';
 import { CartService } from './services/cart.service';
 import { WineCardComponent } from './components/wine-card.component';
@@ -54,7 +54,7 @@ export class CatalogoComponent implements OnInit {
 
   readonly wines = signal<Wine[]>([]);
   readonly search = signal('');
-  readonly activeCategory = signal<WineCategory | 'Todos'>('Todos');
+  readonly activeCategory = signal<string>('Todos');
   readonly sort = signal<SortKey>('rel');
 
   readonly cartOpen = signal(false);
@@ -63,7 +63,7 @@ export class CatalogoComponent implements OnInit {
   readonly menuOpen = signal(false);
 
   /** opções de filtro de categoria (p-selectButton) */
-  readonly categoryOptions = signal<{ label: string; value: WineCategory | 'Todos' }[]>([]);
+  readonly categoryOptions = signal<{ label: string; value: string }[]>([]);
 
   readonly sortOptions = [
     { label: 'Em destaque', value: 'rel' as SortKey },
@@ -76,7 +76,7 @@ export class CatalogoComponent implements OnInit {
   readonly filtered = computed<Wine[]>(() => {
     let list = this.wines().slice();
     const cat = this.activeCategory();
-    if (cat !== 'Todos') list = list.filter((w) => w.category === cat);
+    if (cat !== 'Todos') list = list.filter((w) => w.categorias.some((c) => c.nome === cat));
 
     const q = this.search().trim().toLowerCase();
     if (q) {

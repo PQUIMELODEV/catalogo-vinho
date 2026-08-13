@@ -42,8 +42,15 @@ export class WineService {
     return this.wines$;
   }
 
-  getCategories(): Observable<WineCategory[]> {
-    return this.wines$.pipe(map((wines) => Array.from(new Set(wines.map((w) => w.category)))));
+  /** Categorias (livres) presentes nos vinhos visíveis — base dos botões de filtro do catálogo. */
+  getCategories(): Observable<string[]> {
+    return this.wines$.pipe(
+      map((wines) => {
+        const nomes = new Set<string>();
+        wines.forEach((w) => w.categorias.forEach((c) => nomes.add(c.nome)));
+        return Array.from(nomes).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+      }),
+    );
   }
 
   getById(id: string): Observable<Wine | undefined> {
@@ -77,6 +84,7 @@ export class WineService {
       nutrition: { energia: '', carboidratos: '', acucares: '', sodio: '' },
       // "Destaque" ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
       featured: false,
+      categorias: v.categorias ?? [],
       photos,
     };
   }

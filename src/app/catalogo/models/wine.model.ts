@@ -29,6 +29,7 @@ export interface Vinho {
   teorAlcoolico: number;
   volumeMl: number;
   ativo: boolean;
+  categorias?: { id: number; nome: string }[];
   criadoEm: string;
 }
 
@@ -105,6 +106,8 @@ export interface Wine {
     sodio: string;
   };
   featured: boolean;
+  /** Categorias (livres, muitos-para-muitos) às quais o vinho pertence. Base do filtro do catálogo. */
+  categorias: { id: number; nome: string }[];
   /** URLs das fotos reais do vinho (VinhoFoto), em ordem. Vazio até haver upload. */
   photos: string[];
 }

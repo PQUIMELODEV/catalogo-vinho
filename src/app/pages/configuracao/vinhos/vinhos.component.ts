@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ToastModule } from 'primeng/toast';
@@ -16,18 +17,23 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TagModule } from 'primeng/tag';
+import { forkJoin, of, Observable } from 'rxjs';
 import { VinhoService } from '@/app/shared/services/vinho.service';
 import { PaisService } from '@/app/shared/services/pais.service';
 import { TipoVinhoService } from '@/app/shared/services/tipo-vinho.service';
-import { Pais, TipoVinho, Vinho } from '@/app/catalogo/models/wine.model';
+import { CategoriaService } from '@/app/shared/services/categoria.service';
+import { VinhoCategoriaService } from '@/app/shared/services/vinho-categoria.service';
+import { Categoria, Pais, TipoVinho, Vinho } from '@/app/catalogo/models/wine.model';
 import { VinhoFotosDialogComponent } from './vinho-fotos-dialog.component';
+
+type VinhoForm = Omit<Vinho, 'id' | 'criadoEm' | 'paisNome' | 'tipoVinhoNome' | 'categorias'> & { categoriaIds: number[] };
 
 @Component({
     selector: 'app-vinhos',
     standalone: true,
     imports: [
         CommonModule, FormsModule, TableModule, ButtonModule, DialogModule,
-        InputTextModule, TextareaModule, InputNumberModule, SelectModule,
+        InputTextModule, TextareaModule, InputNumberModule, SelectModule, MultiSelectModule,
         ToggleSwitchModule, ToolbarModule, ToastModule, ConfirmDialogModule,
         IconFieldModule, InputIconModule, TagModule, VinhoFotosDialogComponent
     ],
@@ -116,6 +122,13 @@ import { VinhoFotosDialogComponent } from './vinho-fotos-dialog.component';
                             @if (submitted && !form.tipoVinhoId) { <small class="text-red-500">Tipo é obrigatório.</small> }
                         </div>
                     </div>
+                    <div>
+                        <label for="categorias" class="block font-bold mb-2">Categorias</label>
+                        <p-multiselect id="categorias" [(ngModel)]="form.categoriaIds" [options]="categorias()"
+                            optionLabel="nome" optionValue="id" placeholder="Selecione as categorias"
+                            display="chip" [filter]="true" appendTo="body" fluid />
+                        <small class="text-muted-color block mt-1">Definem em quais filtros o vinho aparece no catálogo.</small>
+                    </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="preco" class="block font-bold mb-2">Preço *</label>
@@ -169,11 +182,13 @@ export class VinhosComponent implements OnInit {
     vinhos = signal<Vinho[]>([]);
     paises = signal<Pais[]>([]);
     tiposVinho = signal<TipoVinho[]>([]);
+    categorias = signal<Categoria[]>([]);
     selected: Vinho[] = [];
     dialogVisible = false;
     submitted = false;
     editingId: string | null = null;
-    form: Omit<Vinho, 'id' | 'criadoEm' | 'paisNome' | 'tipoVinhoNome'> = this.emptyForm();
+    editingCategoriaIds: number[] = [];
+    form: VinhoForm = this.emptyForm();
     fotosVinho = signal<Vinho | null>(null);
 
     @ViewChild('dt') dt!: Table;
@@ -182,6 +197,8 @@ export class VinhosComponent implements OnInit {
         private api: VinhoService,
         private paisService: PaisService,
         private tipoVinhoService: TipoVinhoService,
+        private categoriaService: CategoriaService,
+        private vinhoCategoriaService: VinhoCategoriaService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         private chRef: ChangeDetectorRef
@@ -191,10 +208,11 @@ export class VinhosComponent implements OnInit {
         this.load();
         this.paisService.getPaises().subscribe(d => this.paises.set(d));
         this.tipoVinhoService.getTiposVinho().subscribe(d => this.tiposVinho.set(d));
+        this.categoriaService.getCategorias(true).subscribe(d => this.categorias.set(d));
     }
 
-    emptyForm(): Omit<Vinho, 'id' | 'criadoEm' | 'paisNome' | 'tipoVinhoNome'> {
-        return { nome: '', descricao: undefined, preco: 0, precoPromocional: undefined, quantidadePorCaixa: 0, valorCaixa: undefined, paisId: 0, tipoVinhoId: 0, safra: new Date().getFullYear(), teorAlcoolico: 0, volumeMl: 750, ativo: true };
+    emptyForm(): VinhoForm {
+        return { nome: '', descricao: undefined, preco: 0, precoPromocional: undefined, quantidadePorCaixa: 0, valorCaixa: undefined, paisId: 0, tipoVinhoId: 0, safra: new Date().getFullYear(), teorAlcoolico: 0, volumeMl: 750, ativo: true, categoriaIds: [] };
     }
 
     load() {
@@ -206,11 +224,13 @@ export class VinhosComponent implements OnInit {
 
     onFilter(table: Table, event: Event) { table.filterGlobal((event.target as HTMLInputElement).value, 'contains'); }
 
-    openNew() { this.form = this.emptyForm(); this.editingId = null; this.submitted = false; this.dialogVisible = true; }
+    openNew() { this.form = this.emptyForm(); this.editingId = null; this.editingCategoriaIds = []; this.submitted = false; this.dialogVisible = true; }
 
     edit(v: Vinho) {
-        this.form = { nome: v.nome, descricao: v.descricao, preco: v.preco, precoPromocional: v.precoPromocional, quantidadePorCaixa: v.quantidadePorCaixa, valorCaixa: v.valorCaixa, paisId: v.paisId, tipoVinhoId: v.tipoVinhoId, safra: v.safra, teorAlcoolico: v.teorAlcoolico, volumeMl: v.volumeMl, ativo: v.ativo };
+        const categoriaIds = (v.categorias ?? []).map(c => c.id);
+        this.form = { nome: v.nome, descricao: v.descricao, preco: v.preco, precoPromocional: v.precoPromocional, quantidadePorCaixa: v.quantidadePorCaixa, valorCaixa: v.valorCaixa, paisId: v.paisId, tipoVinhoId: v.tipoVinhoId, safra: v.safra, teorAlcoolico: v.teorAlcoolico, volumeMl: v.volumeMl, ativo: v.ativo, categoriaIds };
         this.editingId = v.id;
+        this.editingCategoriaIds = categoriaIds;
         this.submitted = false;
         this.dialogVisible = true;
     }
@@ -220,11 +240,33 @@ export class VinhosComponent implements OnInit {
     save() {
         this.submitted = true;
         if (!this.form.nome?.trim() || !this.form.paisId || !this.form.tipoVinhoId) return;
-        const op = this.editingId ? this.api.updateVinho(this.editingId, this.form) : this.api.createVinho(this.form);
+        const { categoriaIds, ...vinhoBody } = this.form;
+        const op = this.editingId ? this.api.updateVinho(this.editingId, vinhoBody) : this.api.createVinho(vinhoBody);
         op.subscribe({
-            next: () => { this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: this.editingId ? 'Vinho atualizado.' : 'Vinho criado.', life: 3000 }); this.dialogVisible = false; this.load(); },
+            next: (saved) => {
+                const vinhoId = this.editingId ?? saved?.id;
+                const finalizar = () => {
+                    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: this.editingId ? 'Vinho atualizado.' : 'Vinho criado.', life: 3000 });
+                    this.dialogVisible = false;
+                    this.load();
+                };
+                if (!vinhoId) { finalizar(); return; }
+                this.sincronizarCategorias(vinhoId, categoriaIds).subscribe({ next: finalizar, error: finalizar });
+            },
             error: () => this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível salvar.', life: 3000 })
         });
+    }
+
+    /** Aplica as diferenças (inclui/remove) entre as categorias selecionadas e as atuais do vinho. */
+    private sincronizarCategorias(vinhoId: string, selecionadas: number[]): Observable<unknown> {
+        const atuais = this.editingCategoriaIds;
+        const incluir = selecionadas.filter(id => !atuais.includes(id));
+        const remover = atuais.filter(id => !selecionadas.includes(id));
+        const chamadas: Observable<unknown>[] = [
+            ...incluir.map(id => this.vinhoCategoriaService.createVinhoCategoria({ vinhoId, categoriaId: id })),
+            ...remover.map(id => this.vinhoCategoriaService.deleteVinhoCategoria(vinhoId, id))
+        ];
+        return chamadas.length ? forkJoin(chamadas) : of(null);
     }
 
     confirmDelete(v: Vinho) {
