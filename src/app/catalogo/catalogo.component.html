@@ -5,7 +5,7 @@
   <div class="topbar__inner">
     <a class="brand" href="javascript:void(0)" (click)="scrollToTop()">
       <span class="brand__mark"><i class="pi pi-glass"></i></span>
-      <span class="brand__text"><strong>Adega</strong> Serra Azul</span>
+      <span class="brand__text"><strong>JP</strong> Vinhos</span>
     </a>
 
     <div class="topbar__search">
@@ -109,22 +109,6 @@
   <div class="topbar__backdrop" (click)="menuOpen.set(false)"></div>
 }
 
-<!-- ===== Hero ===== -->
-<section class="hero">
-  <div class="hero__inner">
-    <div class="hero__text">
-      <span class="hero__eyebrow">Seleção da casa · {{ wines().length }} rótulos</span>
-      <h1>Vinhos escolhidos a dedo,<br />direto da nossa adega.</h1>
-      <p>Monte seu pedido e finalize pelo WhatsApp. Entrega combinada diretamente com o vendedor.</p>
-    </div>
-    <div class="hero__bottles" aria-hidden="true">
-      @for (w of heroBottles(); track w.id; let i = $index) {
-        <div class="hero__bottle hb-{{ i }}"><app-bottle-art [wine]="w" /></div>
-      }
-    </div>
-  </div>
-</section>
-
 <!-- ===== Filtros + grade ===== -->
 <main class="container">
   <div class="filterbar">
@@ -169,7 +153,7 @@
 <footer class="site-foot">
   <span class="brand">
     <!-- <span class="brand__mark"><i class="pi pi-glass"></i></span> -->
-    <!-- <span class="brand__text"><strong>Adega</strong> Serra Azul</span> -->
+    <!-- <span class="brand__text"><strong>JP</strong> Vinhos</span> -->
   </span>
   <p>Beba com moderação. Venda proibida para menores de 18 anos.</p>
 </footer>

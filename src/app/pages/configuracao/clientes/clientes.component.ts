@@ -160,7 +160,7 @@ interface ClienteForm {
                                 </div>
                                 <div>
                                     <label class="block font-bold mb-2 text-sm">Estado *</label>
-                                    <p-select [options]="estados" [(ngModel)]="endereco.estado" placeholder="UF" fluid />
+                                    <p-select [options]="estados" [(ngModel)]="endereco.estado" placeholder="UF" appendTo="body" fluid />
                                     @if (submitted && !endereco.estado) { <small class="text-red-500">Obrigatório.</small> }
                                 </div>
                             </div>

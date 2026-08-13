@@ -112,13 +112,13 @@ interface PedidoForm {
                         <div>
                             <label for="cliente" class="block font-bold mb-2">Cliente *</label>
                             <p-select id="cliente" [options]="clientes()" [(ngModel)]="form.clienteId" optionLabel="nome" optionValue="id"
-                                placeholder="Selecione" filter fluid (ngModelChange)="onClienteChange()" />
+                                placeholder="Selecione" filter appendTo="body" fluid (ngModelChange)="onClienteChange()" />
                             @if (submitted && !form.clienteId) { <small class="text-red-500">Cliente é obrigatório.</small> }
                         </div>
                         <div>
                             <label for="endereco" class="block font-bold mb-2">Endereço de entrega</label>
                             <p-select id="endereco" [options]="enderecosDoCliente()" [(ngModel)]="form.enderecoId" optionLabel="resumo" optionValue="id"
-                                placeholder="Selecione" [disabled]="!form.clienteId" fluid />
+                                placeholder="Selecione" [disabled]="!form.clienteId" appendTo="body" fluid />
                         </div>
                     </div>
 
@@ -139,7 +139,7 @@ interface PedidoForm {
                             <div class="col-span-2 sm:col-span-5">
                                 <label class="block font-bold mb-2 text-sm">Vinho *</label>
                                 <p-select [options]="vinhos()" [(ngModel)]="item.vinhoId" optionLabel="nome" optionValue="id"
-                                    placeholder="Selecione" filter fluid (ngModelChange)="onVinhoChange(item)" />
+                                    placeholder="Selecione" filter appendTo="body" fluid (ngModelChange)="onVinhoChange(item)" />
                             </div>
                             <div class="col-span-1 sm:col-span-2">
                                 <label class="block font-bold mb-2 text-sm">Qtd *</label>
@@ -177,7 +177,7 @@ interface PedidoForm {
                         </div>
                         <div>
                             <label for="status" class="block font-bold mb-2">Status de pagamento *</label>
-                            <p-select id="status" [options]="statusOptions" [(ngModel)]="form.statusPagamento" optionLabel="label" optionValue="value" fluid />
+                            <p-select id="status" [options]="statusOptions" [(ngModel)]="form.statusPagamento" optionLabel="label" optionValue="value" appendTo="body" fluid />
                         </div>
                     </div>
                     <div>
@@ -369,7 +369,7 @@ export class PedidosComponent implements OnInit {
             .join('\n');
 
         const msg =
-            `*Pedido #${pedido.id} — Adega Serra Azul*\n\n` +
+            `*Pedido #${pedido.id} — JP Vinhos*\n\n` +
             `Cliente: ${pedido.clienteNome ?? ''}${pedido.clienteTelefone ? ' - ' + pedido.clienteTelefone : ''}\n\n` +
             `Endereço de entrega:\n${pedido.enderecoResumo ?? 'Não informado'}\n\n` +
             `Itens:\n${itensTexto}\n\n` +

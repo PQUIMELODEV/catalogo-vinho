@@ -121,7 +121,7 @@ interface UsuarioForm {
                     <div>
                         <label for="clienteVinculado" class="block font-bold mb-2">Cliente vinculado</label>
                         <p-select id="clienteVinculado" [options]="clientes()" [(ngModel)]="form.clienteId" optionLabel="nome" optionValue="id"
-                            placeholder="Nenhum" [showClear]="true" filter fluid />
+                            placeholder="Nenhum" [showClear]="true" appendTo="body" filter fluid />
                         <small class="text-muted-color block mt-1">Necessário para o usuário conseguir finalizar pedidos pelo catálogo.</small>
                     </div>
                     <div>

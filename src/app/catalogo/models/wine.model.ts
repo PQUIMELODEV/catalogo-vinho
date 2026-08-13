@@ -38,6 +38,7 @@ export interface Estoque {
   quantidade: number;
   quantidadeMinima: number;
   abaixoMinimo: boolean;
+  quantidadePorCaixa?: number;
   criadoEm: string;
 }
 
@@ -48,6 +49,7 @@ export interface MovimentacaoEstoque {
   tipo: 'entrada' | 'saida';
   quantidade: number;
   motivo: string;
+  quantidadePorCaixa?: number;
   criadoEm: string;
 }
 

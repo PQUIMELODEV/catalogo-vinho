@@ -194,7 +194,7 @@ export class CatalogoComponent implements OnInit {
           .join('\n');
 
         const msg =
-          `*Novo pedido #${pedido.id} — Adega Serra Azul*\n\n` +
+          `*Novo pedido #${pedido.id} — JP Vinhos*\n\n` +
           `Cliente: ${pedido.clienteNome ?? ''}${pedido.clienteTelefone ? ' - ' + pedido.clienteTelefone : ''}\n\n` +
           (pedido.enderecoResumo ? `Endereço de entrega:\n${pedido.enderecoResumo}\n\n` : '') +
           `${body}\n\n` +

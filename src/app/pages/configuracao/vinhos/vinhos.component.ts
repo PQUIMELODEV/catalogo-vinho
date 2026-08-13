@@ -107,12 +107,12 @@ import { VinhoFotosDialogComponent } from './vinho-fotos-dialog.component';
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="paisId" class="block font-bold mb-2">País *</label>
-                            <p-select id="paisId" [(ngModel)]="form.paisId" [options]="paises()" optionLabel="nome" optionValue="id" placeholder="Selecione" fluid />
+                            <p-select id="paisId" [(ngModel)]="form.paisId" [options]="paises()" optionLabel="nome" optionValue="id" placeholder="Selecione" appendTo="body" fluid />
                             @if (submitted && !form.paisId) { <small class="text-red-500">País é obrigatório.</small> }
                         </div>
                         <div>
                             <label for="tipoVinhoId" class="block font-bold mb-2">Tipo *</label>
-                            <p-select id="tipoVinhoId" [(ngModel)]="form.tipoVinhoId" [options]="tiposVinho()" optionLabel="nome" optionValue="id" placeholder="Selecione" fluid />
+                            <p-select id="tipoVinhoId" [(ngModel)]="form.tipoVinhoId" [options]="tiposVinho()" optionLabel="nome" optionValue="id" placeholder="Selecione" appendTo="body" fluid />
                             @if (submitted && !form.tipoVinhoId) { <small class="text-red-500">Tipo é obrigatório.</small> }
                         </div>
                     </div>

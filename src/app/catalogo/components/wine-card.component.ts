@@ -213,7 +213,7 @@ import { BottleArtComponent } from './bottle-art.component';
     }
     .price__sub {
       display: block;
-      font-size: calc(10.5px * var(--app-font-scale, 1));
+      font-size: calc(12px * var(--app-font-scale, 1));
       font-weight: 700;
       color: var(--p-primary-color, #c0272d);
       margin-top: 2px;

@@ -8,6 +8,7 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -17,13 +18,14 @@ import { TagModule } from 'primeng/tag';
 import { MovimentacaoService } from '@/app/shared/services/movimentacao.service';
 import { VinhoService } from '@/app/shared/services/vinho.service';
 import { MovimentacaoEstoque, Vinho } from '@/app/catalogo/models/wine.model';
+import { caixasParaUnidades, quebraEmCaixasLabel } from '@/app/shared/utils/quantidade.util';
 
 @Component({
     selector: 'app-movimentacoes',
     standalone: true,
     imports: [
         CommonModule, FormsModule, TableModule, ButtonModule, DialogModule,
-        InputTextModule, InputNumberModule, SelectModule, ToolbarModule,
+        InputTextModule, InputNumberModule, SelectModule, SelectButtonModule, ToolbarModule,
         ToastModule, ConfirmDialogModule, IconFieldModule, InputIconModule, TagModule
     ],
     providers: [ConfirmationService],
@@ -69,7 +71,12 @@ import { MovimentacaoEstoque, Vinho } from '@/app/catalogo/models/wine.model';
                         <p-tag [value]="mov.tipo === 'entrada' ? 'Entrada' : 'Saída'"
                             [severity]="mov.tipo === 'entrada' ? 'success' : 'danger'" />
                     </td>
-                    <td>{{ mov.quantidade }}</td>
+                    <td>
+                        {{ mov.quantidade }} un
+                        @if (quebra(mov.quantidade, mov.quantidadePorCaixa)) {
+                            <span class="block text-xs text-muted-color">{{ quebra(mov.quantidade, mov.quantidadePorCaixa) }}</span>
+                        }
+                    </td>
                     <td>{{ mov.motivo }}</td>
                     <td>
                         <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="confirmDelete(mov)" />
@@ -83,25 +90,31 @@ import { MovimentacaoEstoque, Vinho } from '@/app/catalogo/models/wine.model';
                 <div class="flex flex-col gap-5">
                     <div>
                         <label for="vinhoId" class="block font-bold mb-2">Vinho *</label>
-                        <p-select id="vinhoId" [(ngModel)]="form.vinhoId" [options]="vinhos()"
+                        <p-select id="vinhoId" [(ngModel)]="form.vinhoId" [options]="vinhos()" appendTo="body"
                             optionLabel="nome" optionValue="id" placeholder="Selecione o vinho" [filter]="true" filterBy="nome" fluid />
                         @if (submitted && !form.vinhoId) { <small class="text-red-500">Vinho é obrigatório.</small> }
                     </div>
                     <div>
                         <label for="tipo" class="block font-bold mb-2">Tipo *</label>
-                        <p-select id="tipo" [(ngModel)]="form.tipo" [options]="tipoOpcoes"
+                        <p-select id="tipo" [(ngModel)]="form.tipo" [options]="tipoOpcoes" appendTo="body"
                             optionLabel="label" optionValue="value" placeholder="Selecione" fluid />
                         @if (submitted && !form.tipo) { <small class="text-red-500">Tipo é obrigatório.</small> }
                     </div>
                     <div>
                         <label for="quantidade" class="block font-bold mb-2">Quantidade *</label>
+                        @if (selectedPorCaixa > 0) {
+                            <p-selectbutton [(ngModel)]="form.unidadeMedida" [options]="medidaOpcoes"
+                                optionLabel="label" optionValue="value" [allowEmpty]="false" styleClass="mb-3" />
+                        }
                         <p-inputnumber id="quantidade" [(ngModel)]="form.quantidade" [min]="1" fluid />
+                        @if (form.unidadeMedida === 'cx' && selectedPorCaixa > 0) {
+                            <small class="block mt-1 text-muted-color">= {{ form.quantidade * selectedPorCaixa }} unidades ({{ selectedPorCaixa }} un/caixa)</small>
+                        }
                         @if (submitted && form.quantidade < 1) { <small class="text-red-500">Quantidade deve ser maior que zero.</small> }
                     </div>
                     <div>
-                        <label for="motivo" class="block font-bold mb-2">Motivo *</label>
+                        <label for="motivo" class="block font-bold mb-2">Motivo</label>
                         <input pInputText id="motivo" [(ngModel)]="form.motivo" fluid placeholder="Ex: Compra, Venda, Ajuste de inventário..." />
-                        @if (submitted && !form.motivo) { <small class="text-red-500">Motivo é obrigatório.</small> }
                     </div>
                 </div>
             </ng-template>
@@ -118,7 +131,14 @@ export class MovimentacoesComponent implements OnInit {
     dialogVisible = false;
     submitted = false;
     tipoOpcoes = [{ label: 'Entrada', value: 'entrada' }, { label: 'Saída', value: 'saida' }];
-    form = { vinhoId: '', tipo: '', quantidade: 1, motivo: '' };
+    medidaOpcoes = [{ label: 'Unidade', value: 'un' }, { label: 'Caixa', value: 'cx' }];
+    form: { vinhoId: string; tipo: string; quantidade: number; motivo: string; unidadeMedida: 'un' | 'cx' } = { vinhoId: '', tipo: '', quantidade: 1, motivo: '', unidadeMedida: 'un' };
+
+    quebra = quebraEmCaixasLabel;
+
+    get selectedPorCaixa(): number {
+        return this.vinhos().find(v => v.id === this.form.vinhoId)?.quantidadePorCaixa ?? 0;
+    }
 
     @ViewChild('dt') dt!: Table;
 
@@ -138,14 +158,17 @@ export class MovimentacoesComponent implements OnInit {
 
     onFilter(table: Table, event: Event) { table.filterGlobal((event.target as HTMLInputElement).value, 'contains'); }
 
-    openNew() { this.form = { vinhoId: '', tipo: '', quantidade: 1, motivo: '' }; this.submitted = false; this.dialogVisible = true; }
+    openNew() { this.form = { vinhoId: '', tipo: '', quantidade: 1, motivo: '', unidadeMedida: 'un' }; this.submitted = false; this.dialogVisible = true; }
 
     hideDialog() { this.dialogVisible = false; this.submitted = false; }
 
     save() {
         this.submitted = true;
-        if (!this.form.vinhoId || !this.form.tipo || this.form.quantidade < 1 || !this.form.motivo?.trim()) return;
-        this.api.createMovimentacao(this.form).subscribe({
+        if (!this.form.vinhoId || !this.form.tipo || this.form.quantidade < 1) return;
+        const quantidade = this.form.unidadeMedida === 'cx' && this.selectedPorCaixa > 0
+            ? Math.round(caixasParaUnidades(this.form.quantidade, this.selectedPorCaixa))
+            : this.form.quantidade;
+        this.api.createMovimentacao({ vinhoId: this.form.vinhoId, tipo: this.form.tipo, quantidade, motivo: this.form.motivo }).subscribe({
             next: () => { this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Movimentação registrada.', life: 3000 }); this.dialogVisible = false; this.load(); },
             error: (err) => this.messageService.add({ severity: 'error', summary: 'Erro', detail: err?.error ?? 'Não foi possível registrar.', life: 4000 })
         });
