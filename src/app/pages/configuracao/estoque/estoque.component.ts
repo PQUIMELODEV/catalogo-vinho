@@ -93,8 +93,22 @@ import { quebraEmCaixasLabel } from '@/app/shared/utils/quantidade.util';
                         }
                     </div>
                     <div>
-                        <label for="quantidadeMinima" class="block font-bold mb-2">Quantidade Mínima (alerta)</label>
-                        <p-inputnumber id="quantidadeMinima" [(ngModel)]="form.quantidadeMinima" [min]="0" fluid />
+                        <label class="block font-bold mb-2">Quantidade Mínima (alerta)</label>
+                        @if (editingPorCaixa > 0) {
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="minCaixas" class="block text-sm mb-1 text-muted-color">Caixas ({{ editingPorCaixa }} un)</label>
+                                    <p-inputnumber id="minCaixas" [(ngModel)]="form.minimaCaixas" [min]="0" [useGrouping]="false" fluid />
+                                </div>
+                                <div>
+                                    <label for="minUnidades" class="block text-sm mb-1 text-muted-color">Unidades avulsas</label>
+                                    <p-inputnumber id="minUnidades" [(ngModel)]="form.minimaUnidades" [min]="0" [useGrouping]="false" fluid />
+                                </div>
+                            </div>
+                            <small class="block mt-1 text-muted-color">Total: {{ totalMinima() }} unidades</small>
+                        } @else {
+                            <p-inputnumber id="quantidadeMinima" [(ngModel)]="form.minimaUnidades" [min]="0" [useGrouping]="false" fluid />
+                        }
                     </div>
                 </div>
             </ng-template>
@@ -110,7 +124,7 @@ export class EstoqueComponent implements OnInit {
     dialogVisible = false;
     editing: Estoque | null = null;
     editingPorCaixa = 0;
-    form = { caixas: 0, unidades: 0, quantidadeMinima: 0 };
+    form = { caixas: 0, unidades: 0, minimaCaixas: 0, minimaUnidades: 0 };
 
     quebra = quebraEmCaixasLabel;
 
@@ -118,6 +132,12 @@ export class EstoqueComponent implements OnInit {
         return this.editingPorCaixa > 0
             ? this.form.caixas * this.editingPorCaixa + this.form.unidades
             : this.form.unidades;
+    }
+
+    totalMinima(): number {
+        return this.editingPorCaixa > 0
+            ? this.form.minimaCaixas * this.editingPorCaixa + this.form.minimaUnidades
+            : this.form.minimaUnidades;
     }
 
     @ViewChild('dt') dt!: Table;
@@ -142,9 +162,12 @@ export class EstoqueComponent implements OnInit {
     openEdit(item: Estoque) {
         this.editing = item;
         this.editingPorCaixa = item.quantidadePorCaixa ?? 0;
-        const caixas = this.editingPorCaixa > 0 ? Math.floor(item.quantidade / this.editingPorCaixa) : 0;
-        const unidades = this.editingPorCaixa > 0 ? item.quantidade % this.editingPorCaixa : item.quantidade;
-        this.form = { caixas, unidades, quantidadeMinima: item.quantidadeMinima };
+        const pc = this.editingPorCaixa;
+        const caixas = pc > 0 ? Math.floor(item.quantidade / pc) : 0;
+        const unidades = pc > 0 ? item.quantidade % pc : item.quantidade;
+        const minimaCaixas = pc > 0 ? Math.floor(item.quantidadeMinima / pc) : 0;
+        const minimaUnidades = pc > 0 ? item.quantidadeMinima % pc : item.quantidadeMinima;
+        this.form = { caixas, unidades, minimaCaixas, minimaUnidades };
         this.dialogVisible = true;
     }
 
@@ -153,7 +176,8 @@ export class EstoqueComponent implements OnInit {
     save() {
         if (!this.editing) return;
         const quantidade = this.totalUnidades();
-        this.api.updateEstoque(this.editing.vinhoId, { vinhoId: this.editing.vinhoId, quantidade, quantidadeMinima: this.form.quantidadeMinima }).subscribe({
+        const quantidadeMinima = this.totalMinima();
+        this.api.updateEstoque(this.editing.vinhoId, { vinhoId: this.editing.vinhoId, quantidade, quantidadeMinima }).subscribe({
             next: () => { this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Estoque atualizado.', life: 3000 }); this.dialogVisible = false; this.load(); },
             error: () => this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível salvar.', life: 3000 })
         });
