@@ -1,7 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -34,7 +37,7 @@ const WHATSAPP_NUMBER = '12812369747';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [MessageService],
   imports: [
-    FormsModule, RouterModule, ButtonModule, InputTextModule, IconFieldModule, InputIconModule,
+    CurrencyPipe, FormsModule, RouterModule, ButtonModule, DialogModule, InputNumberModule, InputTextModule, IconFieldModule, InputIconModule,
     SelectButtonModule, SelectModule, ToastModule, TooltipModule,
     WineCardComponent, WineDetailDialogComponent, CartDrawerComponent,
   ],
@@ -107,6 +110,46 @@ export class CatalogoComponent implements OnInit {
 
   openWine(wine: Wine): void {
     this.selectedWine.set(wine);
+  }
+
+  /** Vinho aguardando escolha de UN/CX no modal de adição (null = fechado). */
+  readonly addWine = signal<Wine | null>(null);
+  readonly addKind = signal<PurchaseKind>('unit');
+  readonly addQty = signal(1);
+
+  /** Máximo respeitando o estoque (caixa fechada consome boxQty garrafas por unidade). */
+  readonly addMax = computed(() => {
+    const w = this.addWine();
+    if (!w) return 1;
+    if (this.addKind() === 'box') return w.boxQty > 0 ? Math.max(1, Math.floor(w.stock / w.boxQty)) : 1;
+    return Math.max(1, w.stock);
+  });
+
+  readonly addTotal = computed(() => {
+    const w = this.addWine();
+    if (!w) return 0;
+    return (this.addKind() === 'box' ? w.priceBox : w.priceUnit) * this.addQty();
+  });
+
+  /** Clique em "Adicionar" no card: abre o modal para escolher UN/CX quando há caixa; senão adiciona avulso direto. */
+  promptAdd(wine: Wine): void {
+    const temCaixa = wine.boxQty > 0 && wine.priceBox > 0;
+    if (!temCaixa) { this.addToCart(wine, 'unit', 1); return; }
+    this.addKind.set('unit');
+    this.addQty.set(1);
+    this.addWine.set(wine);
+  }
+
+  setAddKind(kind: PurchaseKind): void {
+    this.addKind.set(kind);
+    this.addQty.set(1);
+  }
+
+  confirmAdd(): void {
+    const w = this.addWine();
+    if (!w) return;
+    this.addToCart(w, this.addKind(), this.addQty());
+    this.addWine.set(null);
   }
 
   addToCart(wine: Wine, kind: PurchaseKind = 'unit', qty = 1): void {

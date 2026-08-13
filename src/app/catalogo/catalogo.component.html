@@ -145,7 +145,7 @@
   } @else {
     <div class="grid">
       @for (w of filtered(); track w.id) {
-        <app-wine-card [wine]="w" (open)="openWine($event)" (add)="addToCart($event)" />
+        <app-wine-card [wine]="w" (open)="openWine($event)" (add)="promptAdd($event)" />
       }
     </div>
   }
@@ -167,3 +167,53 @@
   (close)="selectedWine.set(null)"
   (addToCart)="addToCart($event.wine, $event.kind, $event.qty)"
 />
+
+<!-- ===== Modal: escolher Unidade ou Caixa ao adicionar ===== -->
+<p-dialog
+  [visible]="addWine() !== null"
+  (visibleChange)="!$event && addWine.set(null)"
+  [modal]="true"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [header]="addWine()?.name ?? ''"
+  [style]="{ width: '92vw', maxWidth: '420px' }"
+  styleClass="add-dialog"
+>
+  @if (addWine(); as w) {
+    <div class="kind-toggle">
+      <button type="button" class="kind-toggle__opt" [class.is-active]="addKind() === 'unit'" (click)="setAddKind('unit')">
+        <span class="kt-label">Avulso</span>
+        <span class="kt-price">{{ w.priceUnit | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+      </button>
+      <button type="button" class="kind-toggle__opt" [class.is-active]="addKind() === 'box'" (click)="setAddKind('box')">
+        <span class="kt-label">Caixa fechada · {{ w.boxQty }} un</span>
+        <span class="kt-price">{{ w.priceBox | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+        <span class="kt-sub">Unidade na caixa: {{ (w.priceBox / w.boxQty) | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+      </button>
+    </div>
+    <div class="dialog__buy-row">
+      <p-inputNumber
+        [ngModel]="addQty()"
+        (ngModelChange)="addQty.set($event)"
+        [showButtons]="true"
+        buttonLayout="horizontal"
+        [min]="1"
+        [max]="addMax()"
+        decrementButtonClass="p-button-secondary"
+        incrementButtonClass="p-button-secondary"
+        incrementButtonIcon="pi pi-plus"
+        decrementButtonIcon="pi pi-minus"
+        inputStyleClass="qty-input"
+      />
+      <button
+        pButton
+        type="button"
+        class="flex-1"
+        [label]="'Adicionar — ' + (addTotal() | currency: 'BRL' : 'symbol' : '1.2-2')"
+        icon="pi pi-shopping-cart"
+        (click)="confirmAdd()"
+      ></button>
+    </div>
+  }
+</p-dialog>

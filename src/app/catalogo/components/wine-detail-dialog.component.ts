@@ -84,7 +84,6 @@ import { BottleArtComponent } from './bottle-art.component';
               <div class="spec"><span>Corpo</span><strong>{{ w.body }}</strong></div>
               <div class="spec"><span>Servir a</span><strong>{{ w.serve }}</strong></div>
               -->
-              <div class="spec"><span>Estoque</span><strong>{{ isOut() ? 'Esgotado' : w.stock + ' un' }}</strong></div>
             </div>
 
             <!-- Harmonização ainda não existe no back-end (Vinho). Reative quando houver esse dado real.
