@@ -6,7 +6,6 @@ import { Table, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { SelectButtonModule } from 'primeng/selectbutton';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ToastModule } from 'primeng/toast';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -14,14 +13,14 @@ import { InputIconModule } from 'primeng/inputicon';
 import { TagModule } from 'primeng/tag';
 import { EstoqueService } from '@/app/shared/services/estoque.service';
 import { Estoque } from '@/app/catalogo/models/wine.model';
-import { caixasParaUnidades, quebraEmCaixasLabel } from '@/app/shared/utils/quantidade.util';
+import { quebraEmCaixasLabel } from '@/app/shared/utils/quantidade.util';
 
 @Component({
     selector: 'app-estoque',
     standalone: true,
     imports: [
         CommonModule, FormsModule, TableModule, ButtonModule, DialogModule,
-        InputNumberModule, SelectButtonModule, ToolbarModule, ToastModule, IconFieldModule, InputIconModule, TagModule
+        InputNumberModule, ToolbarModule, ToastModule, IconFieldModule, InputIconModule, TagModule
     ],
     providers: [],
     template: `
@@ -76,14 +75,21 @@ import { caixasParaUnidades, quebraEmCaixasLabel } from '@/app/shared/utils/quan
                 <div class="flex flex-col gap-5">
                     <div class="text-lg font-semibold">{{ editing?.vinhoNome }}</div>
                     <div>
-                        <label for="quantidade" class="block font-bold mb-2">Quantidade *</label>
+                        <label class="block font-bold mb-2">Quantidade *</label>
                         @if (editingPorCaixa > 0) {
-                            <p-selectbutton [(ngModel)]="form.unidadeMedida" [options]="medidaOpcoes"
-                                optionLabel="label" optionValue="value" [allowEmpty]="false" styleClass="mb-3" />
-                        }
-                        <p-inputnumber id="quantidade" [(ngModel)]="form.quantidade" [min]="0" fluid />
-                        @if (form.unidadeMedida === 'cx' && editingPorCaixa > 0) {
-                            <small class="block mt-1 text-muted-color">= {{ form.quantidade * editingPorCaixa }} unidades ({{ editingPorCaixa }} un/caixa)</small>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="caixas" class="block text-sm mb-1 text-muted-color">Caixas ({{ editingPorCaixa }} un)</label>
+                                    <p-inputnumber id="caixas" [(ngModel)]="form.caixas" [min]="0" [useGrouping]="false" fluid />
+                                </div>
+                                <div>
+                                    <label for="unidades" class="block text-sm mb-1 text-muted-color">Unidades avulsas</label>
+                                    <p-inputnumber id="unidades" [(ngModel)]="form.unidades" [min]="0" [useGrouping]="false" fluid />
+                                </div>
+                            </div>
+                            <small class="block mt-1 text-muted-color">Total: {{ totalUnidades() }} unidades</small>
+                        } @else {
+                            <p-inputnumber id="unidades" [(ngModel)]="form.unidades" [min]="0" [useGrouping]="false" fluid />
                         }
                     </div>
                     <div>
@@ -104,10 +110,15 @@ export class EstoqueComponent implements OnInit {
     dialogVisible = false;
     editing: Estoque | null = null;
     editingPorCaixa = 0;
-    medidaOpcoes = [{ label: 'Unidade', value: 'un' }, { label: 'Caixa', value: 'cx' }];
-    form: { quantidade: number; quantidadeMinima: number; unidadeMedida: 'un' | 'cx' } = { quantidade: 0, quantidadeMinima: 0, unidadeMedida: 'un' };
+    form = { caixas: 0, unidades: 0, quantidadeMinima: 0 };
 
     quebra = quebraEmCaixasLabel;
+
+    totalUnidades(): number {
+        return this.editingPorCaixa > 0
+            ? this.form.caixas * this.editingPorCaixa + this.form.unidades
+            : this.form.unidades;
+    }
 
     @ViewChild('dt') dt!: Table;
 
@@ -131,7 +142,9 @@ export class EstoqueComponent implements OnInit {
     openEdit(item: Estoque) {
         this.editing = item;
         this.editingPorCaixa = item.quantidadePorCaixa ?? 0;
-        this.form = { quantidade: item.quantidade, quantidadeMinima: item.quantidadeMinima, unidadeMedida: 'un' };
+        const caixas = this.editingPorCaixa > 0 ? Math.floor(item.quantidade / this.editingPorCaixa) : 0;
+        const unidades = this.editingPorCaixa > 0 ? item.quantidade % this.editingPorCaixa : item.quantidade;
+        this.form = { caixas, unidades, quantidadeMinima: item.quantidadeMinima };
         this.dialogVisible = true;
     }
 
@@ -139,9 +152,7 @@ export class EstoqueComponent implements OnInit {
 
     save() {
         if (!this.editing) return;
-        const quantidade = this.form.unidadeMedida === 'cx' && this.editingPorCaixa > 0
-            ? Math.round(caixasParaUnidades(this.form.quantidade, this.editingPorCaixa))
-            : this.form.quantidade;
+        const quantidade = this.totalUnidades();
         this.api.updateEstoque(this.editing.vinhoId, { vinhoId: this.editing.vinhoId, quantidade, quantidadeMinima: this.form.quantidadeMinima }).subscribe({
             next: () => { this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Estoque atualizado.', life: 3000 }); this.dialogVisible = false; this.load(); },
             error: () => this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível salvar.', life: 3000 })

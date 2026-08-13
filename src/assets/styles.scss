@@ -27,6 +27,16 @@ a {
     text-decoration: none;
 }
 
+/* Overlays de dropdown nunca podem ultrapassar a largura da tela — evita
+   overflow horizontal que "quebra" o layout no celular ao abrir um select. */
+.p-select-overlay,
+.p-multiselect-overlay,
+.p-autocomplete-overlay,
+.p-treeselect-overlay {
+    max-width: calc(100vw - 1rem) !important;
+    box-sizing: border-box;
+}
+
 /* Toasts (snackbars) mais compactos no celular */
 @media (max-width: 640px) {
     .p-toast {

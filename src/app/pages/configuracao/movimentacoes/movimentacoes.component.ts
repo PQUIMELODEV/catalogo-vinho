@@ -8,7 +8,6 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
-import { SelectButtonModule } from 'primeng/selectbutton';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -18,14 +17,14 @@ import { TagModule } from 'primeng/tag';
 import { MovimentacaoService } from '@/app/shared/services/movimentacao.service';
 import { VinhoService } from '@/app/shared/services/vinho.service';
 import { MovimentacaoEstoque, Vinho } from '@/app/catalogo/models/wine.model';
-import { caixasParaUnidades, quebraEmCaixasLabel } from '@/app/shared/utils/quantidade.util';
+import { quebraEmCaixasLabel } from '@/app/shared/utils/quantidade.util';
 
 @Component({
     selector: 'app-movimentacoes',
     standalone: true,
     imports: [
         CommonModule, FormsModule, TableModule, ButtonModule, DialogModule,
-        InputTextModule, InputNumberModule, SelectModule, SelectButtonModule, ToolbarModule,
+        InputTextModule, InputNumberModule, SelectModule, ToolbarModule,
         ToastModule, ConfirmDialogModule, IconFieldModule, InputIconModule, TagModule
     ],
     providers: [ConfirmationService],
@@ -101,16 +100,23 @@ import { caixasParaUnidades, quebraEmCaixasLabel } from '@/app/shared/utils/quan
                         @if (submitted && !form.tipo) { <small class="text-red-500">Tipo é obrigatório.</small> }
                     </div>
                     <div>
-                        <label for="quantidade" class="block font-bold mb-2">Quantidade *</label>
+                        <label class="block font-bold mb-2">Quantidade *</label>
                         @if (selectedPorCaixa > 0) {
-                            <p-selectbutton [(ngModel)]="form.unidadeMedida" [options]="medidaOpcoes"
-                                optionLabel="label" optionValue="value" [allowEmpty]="false" styleClass="mb-3" />
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="caixas" class="block text-sm mb-1 text-muted-color">Caixas ({{ selectedPorCaixa }} un)</label>
+                                    <p-inputnumber id="caixas" [(ngModel)]="form.caixas" [min]="0" [useGrouping]="false" fluid />
+                                </div>
+                                <div>
+                                    <label for="unidades" class="block text-sm mb-1 text-muted-color">Unidades avulsas</label>
+                                    <p-inputnumber id="unidades" [(ngModel)]="form.unidades" [min]="0" [useGrouping]="false" fluid />
+                                </div>
+                            </div>
+                            <small class="block mt-1 text-muted-color">Total: {{ totalUnidades() }} unidades</small>
+                        } @else {
+                            <p-inputnumber id="unidades" [(ngModel)]="form.unidades" [min]="1" [useGrouping]="false" fluid />
                         }
-                        <p-inputnumber id="quantidade" [(ngModel)]="form.quantidade" [min]="1" fluid />
-                        @if (form.unidadeMedida === 'cx' && selectedPorCaixa > 0) {
-                            <small class="block mt-1 text-muted-color">= {{ form.quantidade * selectedPorCaixa }} unidades ({{ selectedPorCaixa }} un/caixa)</small>
-                        }
-                        @if (submitted && form.quantidade < 1) { <small class="text-red-500">Quantidade deve ser maior que zero.</small> }
+                        @if (submitted && totalUnidades() < 1) { <small class="text-red-500">Quantidade deve ser maior que zero.</small> }
                     </div>
                     <div>
                         <label for="motivo" class="block font-bold mb-2">Motivo</label>
@@ -131,13 +137,18 @@ export class MovimentacoesComponent implements OnInit {
     dialogVisible = false;
     submitted = false;
     tipoOpcoes = [{ label: 'Entrada', value: 'entrada' }, { label: 'Saída', value: 'saida' }];
-    medidaOpcoes = [{ label: 'Unidade', value: 'un' }, { label: 'Caixa', value: 'cx' }];
-    form: { vinhoId: string; tipo: string; quantidade: number; motivo: string; unidadeMedida: 'un' | 'cx' } = { vinhoId: '', tipo: '', quantidade: 1, motivo: '', unidadeMedida: 'un' };
+    form = { vinhoId: '', tipo: '', caixas: 0, unidades: 1, motivo: '' };
 
     quebra = quebraEmCaixasLabel;
 
     get selectedPorCaixa(): number {
         return this.vinhos().find(v => v.id === this.form.vinhoId)?.quantidadePorCaixa ?? 0;
+    }
+
+    totalUnidades(): number {
+        return this.selectedPorCaixa > 0
+            ? this.form.caixas * this.selectedPorCaixa + this.form.unidades
+            : this.form.unidades;
     }
 
     @ViewChild('dt') dt!: Table;
@@ -158,16 +169,14 @@ export class MovimentacoesComponent implements OnInit {
 
     onFilter(table: Table, event: Event) { table.filterGlobal((event.target as HTMLInputElement).value, 'contains'); }
 
-    openNew() { this.form = { vinhoId: '', tipo: '', quantidade: 1, motivo: '', unidadeMedida: 'un' }; this.submitted = false; this.dialogVisible = true; }
+    openNew() { this.form = { vinhoId: '', tipo: '', caixas: 0, unidades: 1, motivo: '' }; this.submitted = false; this.dialogVisible = true; }
 
     hideDialog() { this.dialogVisible = false; this.submitted = false; }
 
     save() {
         this.submitted = true;
-        if (!this.form.vinhoId || !this.form.tipo || this.form.quantidade < 1) return;
-        const quantidade = this.form.unidadeMedida === 'cx' && this.selectedPorCaixa > 0
-            ? Math.round(caixasParaUnidades(this.form.quantidade, this.selectedPorCaixa))
-            : this.form.quantidade;
+        const quantidade = this.totalUnidades();
+        if (!this.form.vinhoId || !this.form.tipo || quantidade < 1) return;
         this.api.createMovimentacao({ vinhoId: this.form.vinhoId, tipo: this.form.tipo, quantidade, motivo: this.form.motivo }).subscribe({
             next: () => { this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Movimentação registrada.', life: 3000 }); this.dialogVisible = false; this.load(); },
             error: (err) => this.messageService.add({ severity: 'error', summary: 'Erro', detail: err?.error ?? 'Não foi possível registrar.', life: 4000 })

@@ -17,7 +17,6 @@ import { CartService } from './services/cart.service';
 import { WineCardComponent } from './components/wine-card.component';
 import { WineDetailDialogComponent } from './components/wine-detail-dialog.component';
 import { CartDrawerComponent } from './components/cart-drawer.component';
-import { BottleArtComponent } from './components/bottle-art.component';
 import { AuthService } from '../pages/auth/services/auth.service';
 import { LayoutService } from '../layout/service/layout.service';
 import { FontSizeService } from '../shared/services/font-size.service';
@@ -37,7 +36,7 @@ const WHATSAPP_NUMBER = '12812369747';
   imports: [
     FormsModule, RouterModule, ButtonModule, InputTextModule, IconFieldModule, InputIconModule,
     SelectButtonModule, SelectModule, ToastModule, TooltipModule,
-    WineCardComponent, WineDetailDialogComponent, CartDrawerComponent, BottleArtComponent,
+    WineCardComponent, WineDetailDialogComponent, CartDrawerComponent,
   ],
   templateUrl: './catalogo.component.html',
   styleUrl: './catalogo.component.scss',
@@ -72,15 +71,6 @@ export class CatalogoComponent implements OnInit {
     { label: 'Maior preço', value: 'price-desc' as SortKey },
     { label: 'Nome (A–Z)', value: 'name' as SortKey },
   ];
-
-  /**
-   * Vinhos em destaque para o hero. Wine.featured ainda não existe no back-end
-   * (Vinho), então por ora cai para os primeiros da lista real.
-   */
-  readonly heroBottles = computed(() => {
-    const featured = this.wines().filter((w) => w.featured);
-    return (featured.length ? featured : this.wines()).slice(0, 4);
-  });
 
   /** lista filtrada + ordenada */
   readonly filtered = computed<Wine[]>(() => {
