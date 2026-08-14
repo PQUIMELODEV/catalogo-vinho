@@ -27,6 +27,18 @@ a {
     text-decoration: none;
 }
 
+/* Campo de busca com ícone (p-iconfield): garante espaço para a lupa não
+   sobrepor o texto/placeholder. Em algumas combinações de tema o padding do
+   input vinha zerado, deixando o ícone em cima do texto. */
+.p-iconfield-left > input,
+.p-iconfield-left > .p-inputtext {
+    padding-left: 2.5rem !important;
+}
+.p-iconfield-right > input,
+.p-iconfield-right > .p-inputtext {
+    padding-right: 2.5rem !important;
+}
+
 /* Overlays de dropdown nunca podem ultrapassar a largura da tela — evita
    overflow horizontal que "quebra" o layout no celular ao abrir um select. */
 .p-select-overlay,
