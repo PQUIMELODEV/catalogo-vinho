@@ -37,7 +37,7 @@ type Step = 'telefone' | 'senha' | 'criar-senha' | 'email';
                         <div class="text-center mb-8">
                             <div class="mx-auto mb-5 flex items-center justify-center"
                                 style="width: 60px; height: 60px; border-radius: 18px; background: var(--p-primary-color); color: #fff; font-weight: 800; font-size: 1.4rem; letter-spacing: .03em; box-shadow: 0 6px 16px color-mix(in srgb, var(--p-primary-color) 40%, transparent)">JP</div>
-                            <div class="text-surface-900 dark:text-surface-0 text-2xl font-bold mb-2">Catálogo de Vinhos</div>
+                            <div class="text-2xl font-bold mb-2" style="color: var(--p-text-color)">Catálogo de Vinhos</div>
                             <span class="text-muted-color font-medium">{{ subtitulo() }}</span>
                         </div>
 
