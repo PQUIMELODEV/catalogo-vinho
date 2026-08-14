@@ -29,9 +29,9 @@ type Step = 'telefone' | 'senha' | 'criar-senha' | 'email';
     template: `
         <app-floating-configurator />
 
-        <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen w-full overflow-y-auto py-8 px-4">
+        <div class="flex items-center justify-center min-h-screen w-full overflow-y-auto py-8 px-4" style="background: var(--c-ground)">
             <div class="relative flex flex-col items-center w-full">
-                <div class="w-full max-w-[420px] bg-surface-0 dark:bg-surface-900" style="border-radius: 24px; box-shadow: 0 12px 40px rgba(0, 0, 0, .10)">
+                <div class="w-full max-w-[420px]" style="border-radius: 24px; box-shadow: 0 12px 40px rgba(0, 0, 0, .10); background: var(--c-card)">
                     <div class="px-7 py-10 sm:px-10">
 
                         <div class="text-center mb-8">
@@ -137,7 +137,36 @@ type Step = 'telefone' | 'senha' | 'criar-senha' | 'email';
                 </div>
             </div>
         </div>
-    `
+    `,
+    styles: [`
+        /* Mesma paleta quente da marca usada no catálogo (creme + bordô), para o
+           login não destoar do restante do app. Só escopado a este componente. */
+        :host {
+            --p-content-background: #ffffff;
+            --p-content-hover-background: #efeadf;
+            --p-content-border-color: #e4dbcb;
+            --p-surface-100: #f5f0e6;
+            --p-text-color: #2a2620;
+            --p-text-muted-color: #7c7264;
+            --c-ground: var(--p-content-hover-background, #efeadf);
+            --c-card: var(--p-content-background, #ffffff);
+            display: block;
+        }
+        :host-context(.app-dark) {
+            --p-content-background: #1e1b16;
+            --p-content-hover-background: #16130f;
+            --p-content-border-color: #332d25;
+            --p-surface-100: #262019;
+            --p-text-color: #ede7db;
+            --p-text-muted-color: #a99e8c;
+        }
+        /* Aquece a borda dos campos para o mesmo tom da marca (não vinha do token de content). */
+        :host ::ng-deep .p-inputtext,
+        :host ::ng-deep .p-password > input {
+            border-color: var(--p-content-border-color);
+            background: var(--p-content-background);
+        }
+    `]
 })
 export class Login {
     step = signal<Step>('telefone');
