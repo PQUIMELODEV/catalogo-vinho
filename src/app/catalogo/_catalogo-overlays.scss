@@ -314,6 +314,44 @@
   }
 }
 
+// ---------- Modal "Adicionar" (escolher Unidade / Caixa) ----------
+.add-dialog {
+  .p-dialog-title { font-size: calc(18px * var(--app-font-scale, 1)); font-weight: 800; color: var(--p-text-color); }
+
+  .kind-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 2px 0 18px; }
+  .kind-toggle__opt {
+    display: flex;
+    flex-direction: column;
+    border: 1.5px solid var(--p-content-border-color);
+    background: var(--p-content-background);
+    border-radius: 12px;
+    padding: 12px 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, box-shadow .15s;
+    color: var(--p-text-color);
+    &:hover { border-color: var(--p-primary-color); }
+    &.is-active {
+      border-color: var(--p-primary-color);
+      background: color-mix(in srgb, var(--p-primary-color) 8%, transparent);
+      box-shadow: 0 0 0 1px var(--p-primary-color) inset;
+    }
+  }
+  .kt-label { display: block; font-size: calc(11px * var(--app-font-scale, 1)); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--p-text-muted-color); margin-bottom: 4px; }
+  .kt-price { display: block; font-size: calc(18px * var(--app-font-scale, 1)); font-weight: 800; letter-spacing: -.3px; color: var(--p-text-color); }
+  .kt-sub { display: block; font-size: calc(11px * var(--app-font-scale, 1)); font-weight: 600; color: var(--p-primary-color); margin-top: 4px; line-height: 1.25; }
+
+  .dialog__buy-row { display: flex; gap: 10px; align-items: stretch; }
+  .dialog__buy-row .flex-1 { flex: 1; }
+  .dialog__buy-row .p-inputnumber { flex-shrink: 0; }
+
+  @media (max-width: 460px) {
+    .kind-toggle { grid-template-columns: 1fr; }
+    .dialog__buy-row { flex-direction: column; }
+    .dialog__buy-row .p-inputnumber { align-self: stretch; }
+  }
+}
+
 // ---------- Carrinho (Sidebar / Drawer) ----------
 .cart-sidebar {
   .p-sidebar-content { display: flex; flex-direction: column; }
