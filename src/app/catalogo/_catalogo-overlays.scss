@@ -342,13 +342,17 @@
   .kt-sub { display: block; font-size: calc(11px * var(--app-font-scale, 1)); font-weight: 600; color: var(--p-primary-color); margin-top: 4px; line-height: 1.25; }
 
   .dialog__buy-row { display: flex; gap: 10px; align-items: stretch; }
-  .dialog__buy-row .flex-1 { flex: 1; }
-  .dialog__buy-row .p-inputnumber { flex-shrink: 0; }
+  .dialog__buy-row .flex-1 { flex: 1; min-width: 0; }
+  // seletor de quantidade compacto no desktop (não pode espremer o botão)
+  .dialog__buy-row .p-inputnumber { flex: 0 0 auto; }
+  .qty-input { width: 3.5rem; text-align: center; }
 
   @media (max-width: 460px) {
     .kind-toggle { grid-template-columns: 1fr; }
+    // no celular vira coluna: seletor cheio em cima, botão embaixo
     .dialog__buy-row { flex-direction: column; }
     .dialog__buy-row .p-inputnumber { align-self: stretch; }
+    .qty-input { width: 100%; }
   }
 }
 
